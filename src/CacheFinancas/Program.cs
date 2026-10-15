@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.DataProtection;
+
 namespace CacheFinancas
 {
     public class Program
@@ -8,6 +10,15 @@ namespace CacheFinancas
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHealthChecks();
+
+            // Persiste as chaves do Data Protection (cookies/antiforgery) entre deploys.
+            var keysPath = builder.Configuration["DataProtection:KeysPath"];
+            if (!string.IsNullOrWhiteSpace(keysPath))
+            {
+                builder.Services.AddDataProtection()
+                    .PersistKeysToFileSystem(new DirectoryInfo(keysPath));
+            }
 
             var app = builder.Build();
 
@@ -19,11 +30,17 @@ namespace CacheFinancas
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // Em producao o TLS e terminado pelo `tailscale serve`; o container fala so HTTP.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
+
             app.UseRouting();
 
             app.UseAuthorization();
 
+            app.MapHealthChecks("/health");
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",

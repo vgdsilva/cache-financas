@@ -1,0 +1,49 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cache-financas
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      COMPOSE_FILE: deploy/docker-compose.yml
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gerar deploy/.env a partir dos secrets
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          umask 077
+          {
+            echo "ASPNETCORE_ENVIRONMENT=Production"
+            echo "ConnectionStrings__Default=${DB_CONNECTION_STRING}"
+          } > deploy/.env
+
+      - name: Garantir rede do banco
+        run: docker network inspect db-net >/dev/null
+
+      - name: Build e up
+        run: docker compose up -d --build --remove-orphans
+
+      - name: Limpar imagens antigas
+        run: docker image prune -f
+
+      - name: Verificar healthcheck
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/health; then
+              echo; echo "OK"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Healthcheck falhou"
+          docker compose logs --tail=100 web
+          exit 1
