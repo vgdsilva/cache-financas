@@ -116,3 +116,56 @@ docker run --rm -v cache-financas_dataprotection-keys:/data -v "$PWD":/backup al
 ```
 
 Para o tar do `pgdata`, prefira parar o container antes (`docker compose stop`) ou use o `pg_dump`.
+
+## Problemas conhecidos
+
+### Deploy falha: `Bind for 0.0.0.0:8080 failed: port is already allocated`
+Outro container ocupa a porta 8080 do host.
+```bash
+docker ps --format 'table {{.Names}}\t{{.Ports}}' | grep 8080
+sudo ss -ltnp | grep ':8080'
+```
+Remova o container (`docker rm -f <nome>`) ou troque a porta em `deploy/docker-compose.yml`, no `curl` do workflow e neste arquivo. Depois: Actions > **Re-run failed jobs**. Atencao: containers publicados em `0.0.0.0` ficam expostos, pois o Docker ignora o ufw.
+
+### Deploy falha no passo "Garantir rede do banco"
+A rede externa nao existe: `docker network create db-net` e suba o Postgres (`deploy/postgres`).
+
+### Site da timeout e `Test-NetConnection` sai pela interface Wi-Fi
+Com `tailscale serve` (sem Funnel) o acesso e so para dispositivos conectados a tailnet. O Tailscale do PC/celular precisa estar **Connected**. Para acesso sem cliente, use o Funnel.
+
+### Funnel: `SSL/TLS connection failed` / "nao pode estabelecer conexao segura"
+Sintoma: de fora da tailnet (4G) o handshake TLS falha, mas no servidor `curl https://vgdsilva-server.tail223fe1.ts.net/health` responde 200 e o container esta `healthy`. O DNS aponta para IPs publicos do Funnel (correto).
+
+Causa provavel: o registro do Funnel ficou desatualizado depois que a rede do host mudou (recriar o container no deploy remove/cria interfaces veth, e o `tailscaled` recalcula endpoints). Nao ha problema na app.
+
+Correcao, no servidor:
+```bash
+sudo tailscale funnel reset
+sudo systemctl restart tailscaled
+sleep 10
+sudo tailscale funnel --bg --https=443 http://127.0.0.1:8080
+tailscale funnel status
+```
+Aguarde 1-2 min e teste pelo celular em 4G. Se ainda falhar, force o certificado e teste outra porta:
+```bash
+sudo tailscale cert vgdsilva-server.tail223fe1.ts.net
+sudo tailscale funnel --bg --https=8443 http://127.0.0.1:8080
+```
+
+Diagnostico rapido:
+```bash
+tailscale status && tailscale netcheck
+sudo journalctl -u tailscaled --since "3 hours ago" --no-pager | tail -40
+```
+
+### Checklist quando "o site parou"
+1. Actions: o ultimo Deploy ficou verde?
+2. `docker ps` mostra `cache-financas-web` **healthy**?
+3. `curl http://127.0.0.1:8080/health` responde `Healthy`?
+4. `tailscale funnel status` mostra `(Funnel on)`?
+5. `curl https://vgdsilva-server.tail223fe1.ts.net/health` no proprio servidor funciona?
+6. Se 1-5 estao ok e de fora falha: reset do Funnel (acima).
+
+### Observacoes
+- O `ufw` do servidor esta **inativo**; a protecao atual e nao publicar portas em `0.0.0.0`.
+- Um push na `main` (inclusive so de documentacao) dispara o deploy e recria o container.
