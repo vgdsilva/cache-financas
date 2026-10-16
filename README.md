@@ -6,9 +6,9 @@ Plataforma web privada de finanças pessoais, auto-hospedada em VPS, para uso de
 
 | Documento | Conteúdo |
 |---|---|
-| [Visão do produto](01-visao-do-produto.md) | Problema, público, objetivos e o que fica fora do escopo |
+| [Visão do produto](docs/PRODUCT.md) | Problema, público, objetivos e o que fica fora do escopo |
 | [Roadmap](02-roadmap.md) | Entregas planejadas, em ordem, com critérios de pronto |
-| [Arquitetura](03-arquitetura.md) | Stack, containers, estrutura da solução, deploy e observabilidade |
+| [Arquitetura](docs/ARQUITECTURE.md) | Stack, containers, estrutura da solução, deploy e observabilidade |
 | [Segurança e acesso](04-seguranca-e-acesso.md) | Isolamento de dados, perfis, permissões, root, sessões e auditoria |
 | [Modelo de domínio](05-modelo-de-dominio.md) | Entidades, convenções e regras de negócio |
 | [Chat com IA](06-chat-ia.md) | Lançamento de transações por linguagem natural |
