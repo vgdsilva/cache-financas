@@ -44,6 +44,29 @@ tailscale serve status
 
 Acesso: `https://vgdsilva-server.tail223fe1.ts.net`. Para remover: `sudo tailscale serve --https=443 off`.
 
+## Acesso publico via Funnel (opcional)
+
+Por padrao o `tailscale serve` e **tailnet-only**: so abre em dispositivos com o Tailscale instalado. Para abrir de qualquer rede sem cliente, use o Funnel.
+
+> **Aviso:** com o Funnel a URL fica publica na internet. So habilite com autenticacao implementada no app.
+
+1. Painel Tailscale > **Access controls** (JSON editor): garanta o atributo `funnel`:
+   ```json
+   "nodeAttrs": [
+     { "target": ["autogroup:member"], "attr": ["funnel"] }
+   ]
+   ```
+2. Painel > **DNS** > **HTTPS Certificates** > Enable HTTPS (se ainda nao estiver).
+3. No servidor:
+   ```bash
+   sudo tailscale funnel --bg --https=443 http://127.0.0.1:8080
+   tailscale funnel status      # deve mostrar (Funnel on)
+   ```
+4. Para voltar a ficar privado:
+   ```bash
+   sudo tailscale funnel --https=443 off
+   ```
+
 ## Logs
 
 ```bash
