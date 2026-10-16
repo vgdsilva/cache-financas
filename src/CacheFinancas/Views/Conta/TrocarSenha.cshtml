@@ -1,0 +1,34 @@
+@model CacheFinancas.Models.TrocarSenhaViewModel
+@{
+    ViewData["Title"] = "Trocar senha";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <h1 class="h3 mb-3">Trocar senha</h1>
+        <form asp-action="TrocarSenha" method="post" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="mb-3">
+                <label asp-for="SenhaAtual" class="form-label"></label>
+                <input asp-for="SenhaAtual" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="SenhaAtual" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="NovaSenha" class="form-label"></label>
+                <input asp-for="NovaSenha" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="NovaSenha" class="text-danger"></span>
+                <div class="form-text">Mínimo de 10 caracteres.</div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ConfirmarNovaSenha" class="form-label"></label>
+                <input asp-for="ConfirmarNovaSenha" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmarNovaSenha" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

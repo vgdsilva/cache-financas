@@ -26,13 +26,35 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/Admin/Usuarios">Usuários</a>
+                            </li>
+                        }
                     </ul>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form method="post" action="/Conta/Logout" class="d-flex align-items-center gap-2">
+                            @Html.AntiForgeryToken()
+                            <span class="text-muted small">@User.Identity.Name</span>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Sair</button>
+                        </form>
+                    }
                 </div>
             </div>
         </nav>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["Sucesso"] is string ok)
+            {
+                <div class="alert alert-success">@ok</div>
+            }
+            @if (TempData["Erro"] is string erro)
+            {
+                <div class="alert alert-danger">@erro</div>
+            }
             @RenderBody()
         </main>
     </div>

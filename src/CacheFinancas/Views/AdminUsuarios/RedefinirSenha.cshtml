@@ -1,0 +1,25 @@
+@model CacheFinancas.Models.RedefinirSenhaViewModel
+@{
+    ViewData["Title"] = "Redefinir senha";
+}
+
+<div class="row">
+    <div class="col-md-6 col-lg-5">
+        <h1 class="h3 mb-3">Redefinir senha</h1>
+        <form asp-action="RedefinirSenha" asp-route-id="@Model.Id" method="post" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="mb-3">
+                <label asp-for="SenhaTemporaria" class="form-label"></label>
+                <input asp-for="SenhaTemporaria" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="SenhaTemporaria" class="text-danger"></span>
+                <div class="form-text">Mínimo de 10 caracteres. O usuário deverá trocá-la no próximo acesso.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Redefinir</button>
+            <a class="btn btn-link" href="/Admin/Usuarios">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

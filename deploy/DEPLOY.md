@@ -32,8 +32,18 @@ docker compose up -d
 | Secret | Exemplo | Uso |
 |---|---|---|
 | `DB_CONNECTION_STRING` | `Host=postgres;Port=5432;Database=cachefinancas;Username=cachefinancas;Password=...` | vira `ConnectionStrings__Default` no `deploy/.env` |
+| `BOOTSTRAP_ADMIN_EMAIL` | e-mail do primeiro admin | vira `Bootstrap__AdminEmail`; usado só se não houver usuários |
+| `BOOTSTRAP_ADMIN_SENHA` | senha temporária (mín. 10 caracteres) | vira `Bootstrap__AdminSenha`; trocada no primeiro login |
 
 Evite espacos e `#` na senha (o `env_file` do compose trataria como comentario/aspas).
+
+## Primeiro acesso (autenticacao)
+
+1. O deploy sobe com `Database__MigrarNoStartup=true`: aplica as migrations e, se a tabela `usuarios` estiver vazia, cria o admin com `Bootstrap__AdminEmail`/`Bootstrap__AdminSenha`.
+2. Acesse o site, entre com esse e-mail/senha; o sistema obriga a troca da senha antes de qualquer outra tela.
+3. Em `/Admin/Usuarios` crie os demais usuarios (senha temporaria, troca obrigatoria no primeiro login).
+4. Depois do primeiro acesso, as variaveis `Bootstrap__*` sao ignoradas e podem ser removidas dos secrets.
+5. Conta bloqueada (5 senhas erradas = 15 min) pode ser liberada pelo admin em `/Admin/Usuarios`.
 
 ## Expor via Tailscale
 
