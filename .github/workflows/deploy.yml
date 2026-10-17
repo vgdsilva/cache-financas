@@ -37,7 +37,20 @@ jobs:
       - name: Limpar imagens antigas
         run: docker image prune -f
 
-      - name: Verificar healthcheck
+      - name: Verificar web
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/health; then
+              echo; echo "OK"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Healthcheck do web falhou"
+          docker compose logs --tail=100 web
+          exit 1
+
+      # O web ja esta no ar; falha do server deixa o job vermelho, mas nao derruba o front.
+      - name: Verificar server
         run: |
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:8080/api/health; then
@@ -45,6 +58,6 @@ jobs:
             fi
             sleep 2
           done
-          echo "Healthcheck falhou"
-          docker compose logs --tail=100 server web
+          echo "Healthcheck do server falhou (web segue no ar)"
+          docker compose logs --tail=100 server
           exit 1

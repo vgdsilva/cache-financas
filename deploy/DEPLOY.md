@@ -16,6 +16,7 @@ push na main ─▶ GitHub Actions ─▶ runner self-hosted (vgdsilva-server)
 ```
 
 - **web** (`deploy/Dockerfile.web`, `src/web`): Next.js em modo `standalone`, porta publicada apenas em `127.0.0.1:8080`. O navegador fala so com o web; `/api/*` e repassado ao server (`/api/health` -> `server:3333/health`), entao nao ha CORS nem cookies cross-origin.
+- **Isolamento de falhas:** o `web` nao depende do `server` (sem `depends_on`, healthcheck proprio em `/health`). Se a API cair, o front continua no ar e a home mostra `API: offline`.
 - **server** (`deploy/Dockerfile.server`, `src/server`): ASP.NET Core 10 + EF Core, **sem porta publicada**; so o web (rede default) e o Postgres (`db-net`) o alcancam. No start aplica as migrations do EF Core (`Database__MigrarNoStartup=true`).
 - **Banco** (`deploy/postgres/`): stack independente, volume `pgdata`, sem porta publicada, acessivel pela rede externa `db-net`. **Nao** e tocado pelo pipeline.
 - Docker ignora o ufw, por isso nenhuma porta e publicada em `0.0.0.0`.
