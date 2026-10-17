@@ -29,12 +29,10 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080"
-    depends_on:
-      server:
-        condition: service_healthy
+    # Sem depends_on: se o server cair ou falhar no deploy, o web continua no ar.
     healthcheck:
-      # /api/* e repassado ao server pelo rewrite do Next
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/api/health"]
+      # Checa so o web; o estado do server nao derruba o front
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
       interval: 15s
       timeout: 5s
       retries: 5
