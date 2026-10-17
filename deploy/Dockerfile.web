@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+# Contexto de build: raiz do repositorio (ver deploy/docker-compose.yml)
+
+FROM node:22-alpine AS build
+WORKDIR /app
+
+COPY src/web/package.json src/web/package-lock.json ./
+RUN npm ci
+
+COPY src/web/ ./
+# Destino do rewrite /api/* e embutido no build
+ARG API_INTERNAL_URL=http://server:3333
+ENV API_INTERNAL_URL=$API_INTERNAL_URL NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+FROM node:22-alpine AS final
+WORKDIR /app
+ENV NODE_ENV=production PORT=8080 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1 \
+    API_INTERNAL_URL=http://server:3333
+
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/public ./public
+USER node
+
+EXPOSE 8080
+CMD ["node", "server.js"]

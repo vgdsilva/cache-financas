@@ -1,0 +1,10 @@
+**/node_modules/
+**/.next/
+**/.env*
+.git/
+.github/
+tests/
+docs/
+deploy/
+src/server/
+src/CacheFinancas*/

@@ -20,16 +20,12 @@ jobs:
       - name: Gerar deploy/.env a partir dos secrets
         env:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-          BOOTSTRAP_ADMIN_EMAIL: ${{ secrets.BOOTSTRAP_ADMIN_EMAIL }}
-          BOOTSTRAP_ADMIN_SENHA: ${{ secrets.BOOTSTRAP_ADMIN_SENHA }}
         run: |
           umask 077
           {
             echo "ASPNETCORE_ENVIRONMENT=Production"
             echo "ConnectionStrings__Default=${DB_CONNECTION_STRING}"
             echo "Database__MigrarNoStartup=true"
-            echo "Bootstrap__AdminEmail=${BOOTSTRAP_ADMIN_EMAIL}"
-            echo "Bootstrap__AdminSenha=${BOOTSTRAP_ADMIN_SENHA}"
           } > deploy/.env
 
       - name: Garantir rede do banco
@@ -44,11 +40,11 @@ jobs:
       - name: Verificar healthcheck
         run: |
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8080/health; then
+            if curl -fsS http://127.0.0.1:8080/api/health; then
               echo; echo "OK"; exit 0
             fi
             sleep 2
           done
           echo "Healthcheck falhou"
-          docker compose logs --tail=100 web
+          docker compose logs --tail=100 server web
           exit 1

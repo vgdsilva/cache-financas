@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+# Contexto de build: raiz do repositorio (ver deploy/docker-compose.yml)
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Restore em camada separada: so invalida quando o .csproj muda
+COPY src/server/CacheFinancas.Server.csproj ./
+RUN dotnet restore
+
+COPY src/server/ ./
+RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
+WORKDIR /app
+
+ENV ASPNETCORE_URLS=http://+:3333 \
+    DOTNET_EnableDiagnostics=0
+
+COPY --from=build --chown=$APP_UID /app/publish .
+USER $APP_UID
+
+EXPOSE 3333
+ENTRYPOINT ["dotnet", "CacheFinancas.Server.dll"]
