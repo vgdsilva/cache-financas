@@ -1,6 +1,24 @@
 name: cache-financas
 
 services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: cache-financas-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cachefinancas}
+      POSTGRES_USER: ${POSTGRES_USER:-cachefinancas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no deploy/.env}
+    # Sem "ports": acessivel somente pelo server, na rede do compose.
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   server:
     build:
       context: ..
@@ -8,11 +26,13 @@ services:
     image: cache-financas-server:latest
     container_name: cache-financas-server
     restart: unless-stopped
-    env_file: .env
-    # Sem "ports": so o web (rede default) e o banco (db-net) enxergam o server.
-    networks:
-      - default
-      - db-net
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__Default: Host=postgres;Port=5432;Database=${POSTGRES_DB:-cachefinancas};Username=${POSTGRES_USER:-cachefinancas};Password=${POSTGRES_PASSWORD}
+    # Sem "ports": so o web enxerga o server.
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3333/health"]
       interval: 15s
@@ -31,15 +51,11 @@ services:
       - "127.0.0.1:8080:8080"
     # Sem depends_on: se o server cair ou falhar no deploy, o web continua no ar.
     healthcheck:
-      # Checa so o web; o estado do server nao derruba o front
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 20s
+      start_period: 10s
 
-networks:
-  # Criada uma vez no servidor junto com o Postgres (ver deploy/postgres)
-  db-net:
-    external: true
-    name: db-net
+volumes:
+  pgdata:

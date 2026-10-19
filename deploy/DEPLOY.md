@@ -6,41 +6,35 @@
 push na main ─▶ GitHub Actions ─▶ runner self-hosted (vgdsilva-server)
                                         │ docker compose up -d --build
                                         ▼
- Tailscale (HTTPS) ─▶ tailscale serve ─▶ 127.0.0.1:8080 ─▶ container web (Next.js :8080)
-                                                              │ /api/* (rewrite, rede default)
+ Tailscale (HTTPS) ─▶ tailscale serve ─▶ 127.0.0.1:8080 ─▶ container web (nginx :8080, Blazor WASM)
+                                                              │ /api/* (proxy, rede do compose)
                                                               ▼
                                                         container server (ASP.NET Core :3333)
-                                                              │ rede db-net
+                                                              │
                                                               ▼
-                                                        container postgres (stack separado)
+                                                        container postgres (volume pgdata)
 ```
 
-- **web** (`deploy/Dockerfile.web`, `src/web`): Next.js em modo `standalone`, porta publicada apenas em `127.0.0.1:8080`. O navegador fala so com o web; `/api/*` e repassado ao server (`/api/health` -> `server:3333/health`), entao nao ha CORS nem cookies cross-origin.
-- **Isolamento de falhas:** o `web` nao depende do `server` (sem `depends_on`, healthcheck proprio em `/health`). Se a API cair, o front continua no ar e a home mostra `API: offline`.
-- **server** (`deploy/Dockerfile.server`, `src/server`): ASP.NET Core 10 + EF Core, **sem porta publicada**; so o web (rede default) e o Postgres (`db-net`) o alcancam. No start aplica as migrations do EF Core (`Database__MigrarNoStartup=true`).
-- **Banco** (`deploy/postgres/`): stack independente, volume `pgdata`, sem porta publicada, acessivel pela rede externa `db-net`. **Nao** e tocado pelo pipeline.
+- **web** (`deploy/Dockerfile.web`, `src/web`): Blazor WebAssembly publicado como estaticos e servido pelo nginx (`deploy/nginx.conf`), porta publicada apenas em `127.0.0.1:8080`. O navegador fala so com o web; `/api/*` e repassado ao server com o prefixo removido (`/api/health` -> `server:3333/health`), entao nao ha CORS.
+- **Isolamento de falhas:** o `web` nao depende do `server` (sem `depends_on`, healthcheck proprio em `/health`, nginx resolve o server em runtime). Se a API cair, o front continua no ar.
+- **server** (`deploy/Dockerfile.server`, `src/api/SistemaFinanceiro.Web.Api`): ASP.NET Core (.NET 11), **sem porta publicada**; so o web o alcanca. Espera o Postgres ficar `healthy` para subir.
+- **postgres** (`postgres:17-alpine`): no mesmo compose, volume `pgdata`, sem porta publicada, acessivel apenas pelo server.
 - Docker ignora o ufw, por isso nenhuma porta e publicada em `0.0.0.0`.
+- A tag da imagem .NET e o ARG `DOTNET_TAG` (padrao `11.0`) nos dois Dockerfiles; ajuste se a imagem preview tiver outra tag.
 
 ## Preparacao unica no servidor
 
-```bash
-docker network create db-net
-
-# Postgres (copie a pasta deploy/postgres para ex.: ~/infra/postgres)
-cd ~/infra/postgres
-cp .env.example .env      # edite POSTGRES_PASSWORD
-docker compose up -d
-```
+Nada alem do runner. O Postgres sobe junto com a stack. (Se existia o Postgres standalone antigo e a rede `db-net`, faca `pg_dump` dele, restaure no novo e depois remova com `docker compose down` na pasta antiga e `docker network rm db-net`.)
 
 ## Secrets (Settings > Secrets and variables > Actions)
 
-| Secret | Exemplo | Uso |
-|---|---|---|
-| `DB_CONNECTION_STRING` | `Host=postgres;Port=5432;Database=cachefinancas;Username=cachefinancas;Password=...` | vira `ConnectionStrings__Default` no `deploy/.env` |
+| Secret | Uso |
+|---|---|
+| `POSTGRES_PASSWORD` | senha do banco; vira `POSTGRES_PASSWORD` no `deploy/.env` e compoe a connection string do server |
 
-Evite espacos e `#` na senha (o `env_file` do compose trataria como comentario/aspas).
+Evite espacos, aspas e `#` na senha. A senha so vale na **primeira** criacao do volume; trocar depois exige `ALTER USER`.
 
-Os secrets `BOOTSTRAP_ADMIN_EMAIL` e `BOOTSTRAP_ADMIN_SENHA` do sistema antigo nao sao mais usados e podem ser removidos.
+O secret `DB_CONNECTION_STRING` nao e mais usado e pode ser removido.
 
 ## Expor via Tailscale
 
@@ -81,6 +75,7 @@ cd <_work>/cache-financas/cache-financas   # checkout do runner
 docker compose -f deploy/docker-compose.yml logs -f server web
 docker logs -f cache-financas-server       # API
 docker logs -f cache-financas-web          # front
+docker logs -f cache-financas-db           # banco
 
 journalctl -u 'actions.runner.*' -f        # servico do runner
 ```
@@ -102,12 +97,12 @@ Opcao 3 (emergencia, no servidor): a imagem anterior ainda pode existir sem tag.
 
 ```bash
 # Banco (logico, preferivel)
-docker exec postgres pg_dump -U cachefinancas -Fc cachefinancas > cachefinancas_$(date +%F).dump
+docker exec cache-financas-db pg_dump -U cachefinancas -Fc cachefinancas > cachefinancas_$(date +%F).dump
 # Restore
-docker exec -i postgres pg_restore -U cachefinancas -d cachefinancas --clean < cachefinancas_YYYY-MM-DD.dump
+docker exec -i cache-financas-db pg_restore -U cachefinancas -d cachefinancas --clean < cachefinancas_YYYY-MM-DD.dump
 
 # Qualquer volume nomeado (tar)
-docker run --rm -v postgres_pgdata:/data -v "$PWD":/backup alpine \
+docker run --rm -v cache-financas_pgdata:/data -v "$PWD":/backup alpine \
   tar czf /backup/pgdata_$(date +%F).tgz -C /data .
 ```
 
@@ -122,9 +117,6 @@ docker ps --format 'table {{.Names}}\t{{.Ports}}' | grep 8080
 sudo ss -ltnp | grep ':8080'
 ```
 Remova o container (`docker rm -f <nome>`) ou troque a porta em `deploy/docker-compose.yml`, no `curl` do workflow e neste arquivo. Depois: Actions > **Re-run failed jobs**. Atencao: containers publicados em `0.0.0.0` ficam expostos, pois o Docker ignora o ufw.
-
-### Deploy falha no passo "Garantir rede do banco"
-A rede externa nao existe: `docker network create db-net` e suba o Postgres (`deploy/postgres`).
 
 ### Site da timeout e `Test-NetConnection` sai pela interface Wi-Fi
 Com `tailscale serve` (sem Funnel) o acesso e so para dispositivos conectados a tailnet. O Tailscale do PC/celular precisa estar **Connected**. Para acesso sem cliente, use o Funnel.
@@ -156,7 +148,7 @@ sudo journalctl -u tailscaled --since "3 hours ago" --no-pager | tail -40
 
 ### Checklist quando "o site parou"
 1. Actions: o ultimo Deploy ficou verde?
-2. `docker ps` mostra `cache-financas-web` e `cache-financas-server` **healthy**?
+2. `docker ps` mostra `cache-financas-web`, `cache-financas-server` e `cache-financas-db` **healthy**?
 3. `curl http://127.0.0.1:8080/api/health` responde `{"status":"ok"}`?
 4. `tailscale funnel status` mostra `(Funnel on)`?
 5. `curl https://vgdsilva-server.tail223fe1.ts.net/api/health` no proprio servidor funciona?

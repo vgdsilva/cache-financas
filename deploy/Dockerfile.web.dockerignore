@@ -1,10 +1,9 @@
-**/node_modules/
-**/.next/
-**/.env*
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
 .git/
 .github/
 tests/
 docs/
-deploy/
-src/server/
-src/CacheFinancas*/
+src/api/
