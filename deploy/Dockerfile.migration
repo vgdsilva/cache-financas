@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1
+# Contexto de build: raiz do repositorio (ver deploy/docker-compose.yml)
+# Aplica migrations e seeds e encerra.
+
+ARG DOTNET_TAG=11.0
+
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG} AS build
+WORKDIR /src
+
+# Restore em camada separada: so invalida quando algum .csproj muda
+COPY src/shared/FMS.Domain/FMS.Domain.csproj shared/FMS.Domain/
+COPY src/api/FMS.Web.Api.Infraestructure/FMS.Web.Api.Infraestructure.csproj api/FMS.Web.Api.Infraestructure/
+COPY src/database/FMS.Migration/FMS.Migration.csproj database/FMS.Migration/
+RUN dotnet restore database/FMS.Migration/FMS.Migration.csproj
+
+COPY src/shared/FMS.Domain/ shared/FMS.Domain/
+COPY src/api/FMS.Web.Api.Infraestructure/ api/FMS.Web.Api.Infraestructure/
+COPY src/database/FMS.Migration/ database/FMS.Migration/
+RUN dotnet publish database/FMS.Migration/FMS.Migration.csproj \
+    -c Release -o /app/publish --no-restore /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/runtime:${DOTNET_TAG}-alpine AS final
+WORKDIR /app
+
+ENV DOTNET_EnableDiagnostics=0
+
+COPY --from=build --chown=$APP_UID /app/publish .
+USER $APP_UID
+
+ENTRYPOINT ["dotnet", "FMS.Migration.dll"]
