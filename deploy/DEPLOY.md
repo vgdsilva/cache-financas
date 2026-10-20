@@ -17,7 +17,7 @@ push na main ─▶ GitHub Actions ─▶ runner self-hosted (vgdsilva-server)
 
 - **web** (`deploy/Dockerfile.web`, `src/web`): Blazor WebAssembly publicado como estaticos e servido pelo nginx (`deploy/nginx.conf`), porta publicada apenas em `127.0.0.1:8080`. O navegador fala so com o web; `/api/*` e repassado ao server com o prefixo removido (`/api/health` -> `server:3333/health`), entao nao ha CORS.
 - **Isolamento de falhas:** o `web` nao depende do `server` (sem `depends_on`, healthcheck proprio em `/health`, nginx resolve o server em runtime). Se a API cair, o front continua no ar.
-- **server** (`deploy/Dockerfile.server`, `src/api/SistemaFinanceiro.Web.Api`): ASP.NET Core (.NET 11), **sem porta publicada**; so o web o alcanca. Espera o Postgres ficar `healthy` para subir.
+- **server** (`deploy/Dockerfile.server`, `src/api/FMS.Web.Api`): ASP.NET Core (.NET 11), **sem porta publicada**; so o web o alcanca. Espera o Postgres ficar `healthy` para subir.
 - **postgres** (`postgres:17-alpine`): no mesmo compose, volume `pgdata`, sem porta publicada, acessivel apenas pelo server.
 - Docker ignora o ufw, por isso nenhuma porta e publicada em `0.0.0.0`.
 - A tag da imagem .NET e o ARG `DOTNET_TAG` (padrao `11.0`) nos dois Dockerfiles; ajuste se a imagem preview tiver outra tag.

@@ -7,11 +7,11 @@ FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG} AS build
 WORKDIR /src
 
 # Restore em camada separada: so invalida quando o .csproj muda
-COPY src/api/SistemaFinanceiro.Web.Api/SistemaFinanceiro.Web.Api.csproj api/SistemaFinanceiro.Web.Api/
-RUN dotnet restore api/SistemaFinanceiro.Web.Api/SistemaFinanceiro.Web.Api.csproj
+COPY src/api/FMS.Web.Api/FMS.Web.Api.csproj api/FMS.Web.Api/
+RUN dotnet restore api/FMS.Web.Api/FMS.Web.Api.csproj
 
-COPY src/api/SistemaFinanceiro.Web.Api/ api/SistemaFinanceiro.Web.Api/
-RUN dotnet publish api/SistemaFinanceiro.Web.Api/SistemaFinanceiro.Web.Api.csproj \
+COPY src/api/FMS.Web.Api/ api/FMS.Web.Api/
+RUN dotnet publish api/FMS.Web.Api/FMS.Web.Api.csproj \
     -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_TAG}-alpine AS final
@@ -24,4 +24,4 @@ COPY --from=build --chown=$APP_UID /app/publish .
 USER $APP_UID
 
 EXPOSE 3333
-ENTRYPOINT ["dotnet", "SistemaFinanceiro.Web.Api.dll"]
+ENTRYPOINT ["dotnet", "FMS.Web.Api.dll"]

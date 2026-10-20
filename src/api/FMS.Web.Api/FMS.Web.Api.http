@@ -1,0 +1,11 @@
+@FMS.Web.Api_HostAddress = http://localhost:5125
+
+GET {{FMS.Web.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+
+GET {{FMS.Web.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
