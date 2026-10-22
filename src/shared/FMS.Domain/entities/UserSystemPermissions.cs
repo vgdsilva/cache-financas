@@ -1,2 +1,0 @@
-namespace FMS.Domain.entities;
-

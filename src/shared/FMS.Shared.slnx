@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FMS.Communication/FMS.Communication.csproj" />
+  <Project Path="FMS.Domain/FMS.Domain.csproj" />
+</Solution>

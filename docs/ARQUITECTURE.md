@@ -24,7 +24,7 @@ Tudo roda em Docker Compose numa VPS privada.
 | ORM | EF Core com provider Npgsql | Decidido |
 | Banco | PostgreSQL | Decidido |
 | Jobs em segundo plano | Hangfire com storage no PostgreSQL | Decidido |
-| Autenticação | ASP.NET Core Identity com 2FA | Decidido |
+| Autenticação | Própria (usuários, sessões e permissões em tabelas), JWT de curta duração com claims + refresh token em `UserSession`, 2FA | Decidido |
 | Logs técnicos | Serilog + Seq | Decidido |
 | Proxy reverso e HTTPS | Caddy | Decidido |
 | Abstração de IA | Microsoft.Extensions.AI | Decidido |
