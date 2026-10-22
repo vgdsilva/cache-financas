@@ -7,10 +7,10 @@ FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG} AS build
 WORKDIR /src
 
 # Restore em camada separada: so invalida quando o .csproj muda
-COPY src/api/FMS.Web.Api/FMS.Web.Api.csproj api/FMS.Web.Api/
+COPY src/FMS.Web.Api/FMS.Web.Api.csproj api/FMS.Web.Api/
 RUN dotnet restore api/FMS.Web.Api/FMS.Web.Api.csproj
 
-COPY src/api/FMS.Web.Api/ api/FMS.Web.Api/
+COPY src/FMS.Web.Api/ api/FMS.Web.Api/
 RUN dotnet publish api/FMS.Web.Api/FMS.Web.Api.csproj \
     -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
