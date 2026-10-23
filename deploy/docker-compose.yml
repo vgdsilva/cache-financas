@@ -28,6 +28,8 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      # Sem TTY no container: forca as cores do console no "docker compose logs".
+      Logging__Console__FormatterOptions__ColorBehavior: Enabled
       ConnectionStrings__Default: Host=postgres;Port=5432;Database=${POSTGRES_DB:-cachefinancas};Username=${POSTGRES_USER:-cachefinancas};Password=${POSTGRES_PASSWORD}
     # Sem "ports": so o web enxerga o server.
     depends_on:
