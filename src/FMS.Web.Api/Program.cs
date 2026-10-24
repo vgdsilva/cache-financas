@@ -2,6 +2,8 @@ using FMS.Web.Api.Infraestructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddFmsConsole();
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -11,6 +13,8 @@ builder.Services.AddAppDbContext(
     ?? throw new InvalidOperationException("ConnectionStrings:Default nao configurada."));
 
 var app = builder.Build();
+
+app.UseFmsRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
