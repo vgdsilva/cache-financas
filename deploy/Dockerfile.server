@@ -7,22 +7,15 @@ FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG} AS build
 WORKDIR /src
 
 # Restore em camada separada: so invalida quando o .csproj muda
-<<<<<<< HEAD
-COPY src/shared/FMS.Domain/FMS.Domain.csproj shared/FMS.Domain/
-COPY src/api/FMS.Web.Api.Infraestructure/FMS.Web.Api.Infraestructure.csproj api/FMS.Web.Api.Infraestructure/
-COPY src/api/FMS.Web.Api/FMS.Web.Api.csproj api/FMS.Web.Api/
-RUN dotnet restore api/FMS.Web.Api/FMS.Web.Api.csproj
+COPY src/FMS.Domain/FMS.Domain.csproj FMS.Domain/
+COPY src/FMS.Web.Api.Data/FMS.Web.Api.Data.csproj FMS.Web.Api.Data/
+COPY src/FMS.Web.Api/FMS.Web.Api.csproj FMS.Web.Api/
+RUN dotnet restore FMS.Web.Api/FMS.Web.Api.csproj
 
-COPY src/shared/FMS.Domain/ shared/FMS.Domain/
-COPY src/api/FMS.Web.Api.Infraestructure/ api/FMS.Web.Api.Infraestructure/
-COPY src/api/FMS.Web.Api/ api/FMS.Web.Api/
-=======
-COPY src/FMS.Web.Api/FMS.Web.Api.csproj api/FMS.Web.Api/
-RUN dotnet restore api/FMS.Web.Api/FMS.Web.Api.csproj
-
-COPY src/FMS.Web.Api/ api/FMS.Web.Api/
->>>>>>> 306ce353f662dacecf648481e69fc6476643bc2f
-RUN dotnet publish api/FMS.Web.Api/FMS.Web.Api.csproj \
+COPY src/FMS.Domain/ FMS.Domain/
+COPY src/FMS.Web.Api.Data/ FMS.Web.Api.Data/
+COPY src/FMS.Web.Api/ FMS.Web.Api/
+RUN dotnet publish FMS.Web.Api/FMS.Web.Api.csproj \
     -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_TAG}-alpine AS final

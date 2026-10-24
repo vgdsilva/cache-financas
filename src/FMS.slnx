@@ -1,12 +1,8 @@
 <Solution>
   <Folder Name="/api/">
     <Project Path="FMS.Web.Api.Bussiness.Rules/FMS.Web.Api.Bussiness.Rules.csproj" />
-    <Project Path="FMS.Web.Api.Infraestructure.Data/FMS.Web.Api.Infraestructure.Data.csproj" />
-    <Project Path="FMS.Web.Api.Infraestructure.Ioc/FMS.Web.Api.Infraestructure.Ioc.csproj" />
+    <Project Path="FMS.Web.Api.Data/FMS.Web.Api.Data.csproj" />
     <Project Path="FMS.Web.Api/FMS.Web.Api.csproj" />
-  </Folder>
-  <Folder Name="/database/">
-    <Project Path="FMS.Migration/FMS.Migration.csproj" />
   </Folder>
   <Folder Name="/shared/">
     <Project Path="FMS.Communication/FMS.Communication.csproj" />

@@ -85,7 +85,7 @@ As respostas do chat com IA chegam em streaming via Server-Sent Events.
 1. Push na branch principal.
 2. CI compila, roda os testes, gera a imagem Docker e publica num registry.
 3. Na VPS, a nova imagem é baixada e o container reiniciado.
-4. Migrações do EF Core rodam em passo separado, nunca automaticamente na inicialização da API.
+4. Migrações do EF Core são aplicadas pela própria API na inicialização (`ApplyMigrationsAsync`). Falhas são registradas em log e não impedem a API de subir.
 
 ## Observabilidade
 
