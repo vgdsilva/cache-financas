@@ -75,3 +75,8 @@ main {
         padding-right: 1.5rem !important;
     }
 }
+
+.user-name {
+    color: #475467;
+    font-size: 0.9rem;
+}

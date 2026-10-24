@@ -1,0 +1,119 @@
+@page "/login"
+@layout AuthLayout
+@inject AuthService Auth
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Navigation
+
+<PageTitle>Entrar · FMS</PageTitle>
+
+<div class="login">
+    <aside class="login-brand">
+        <div class="brand-logo">
+            <span class="brand-mark">F</span>
+            <span class="brand-name">cache-<strong>financas</strong></span>
+        </div>
+
+        <div class="brand-copy">
+            <h2>Suas finanças,<br />em um só lugar.</h2>
+            <p>Acompanhe contas, lançamentos e metas com clareza e segurança.</p>
+
+            <ul>
+                <li>Visão consolidada de todas as suas contas</li>
+                <li>Controle de acesso por usuário e permissão</li>
+                <li>Seus dados protegidos, no seu servidor</li>
+            </ul>
+        </div>
+
+        <small class="brand-footer">© @DateTime.Now.Year FMS</small>
+    </aside>
+
+    <main class="login-form-side">
+        <EditForm Model="model" OnSubmit="SubmitAsync" FormName="login" class="login-card">
+            <h1>Entrar</h1>
+            <p class="subtitle">Informe suas credenciais para acessar o sistema.</p>
+
+            @if (error is not null)
+            {
+                <div class="alert-error" role="alert">@error</div>
+            }
+
+            <label for="login">Login ou e-mail</label>
+            <input id="login" class="field" @bind="model.Login" @bind:event="oninput"
+                   autocomplete="username" autofocus disabled="@busy" />
+
+            <label for="password">Senha</label>
+            <div class="password-wrap">
+                <input id="password" class="field" type="@(showPassword ? "text" : "password")"
+                       @bind="model.Password" @bind:event="oninput"
+                       autocomplete="current-password" disabled="@busy" />
+                <button type="button" class="toggle" @onclick="() => showPassword = !showPassword"
+                        aria-label="@(showPassword ? "Ocultar senha" : "Mostrar senha")">
+                    @(showPassword ? "Ocultar" : "Mostrar")
+                </button>
+            </div>
+
+            <button type="submit" class="submit" disabled="@(busy || !CanSubmit)">
+                @if (busy)
+                {
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span>Entrando…</span>
+                }
+                else
+                {
+                    <span>Entrar</span>
+                }
+            </button>
+        </EditForm>
+    </main>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
+
+    private readonly LoginRequestDto model = new();
+    private bool busy;
+    private bool showPassword;
+    private string? error;
+
+    private bool CanSubmit => !string.IsNullOrWhiteSpace(model.Login) && !string.IsNullOrEmpty(model.Password);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+        if (state.User.Identity?.IsAuthenticated == true)
+            Navigation.NavigateTo(SafeReturnUrl(), replace: true);
+    }
+
+    private async Task SubmitAsync()
+    {
+        if (busy || !CanSubmit)
+            return;
+
+        busy = true;
+        error = null;
+
+        var outcome = await Auth.LoginAsync(model.Login.Trim(), model.Password);
+
+        busy = false;
+
+        if (outcome.Success)
+        {
+            model.Password = string.Empty;
+            Navigation.NavigateTo(SafeReturnUrl(), replace: true);
+        }
+        else
+        {
+            error = outcome.Error;
+            model.Password = string.Empty;
+        }
+    }
+
+    /// <summary>Só aceita caminhos relativos da própria aplicação, evitando redirecionamento aberto.</summary>
+    private string SafeReturnUrl()
+    {
+        if (string.IsNullOrWhiteSpace(ReturnUrl) || ReturnUrl.StartsWith("//") || ReturnUrl.Contains("://") || ReturnUrl.Contains('\\'))
+            return "/";
+
+        return "/" + ReturnUrl.TrimStart('/');
+    }
+}

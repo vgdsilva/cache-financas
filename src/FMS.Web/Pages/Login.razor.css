@@ -1,0 +1,204 @@
+.login {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+/* Painel da marca (lado esquerdo) */
+.login-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2.5rem 3.5rem;
+    color: #fff;
+    background:
+        radial-gradient(circle at 85% 90%, rgba(235, 195, 60, 0.45), transparent 45%),
+        linear-gradient(145deg, #0b2a66 0%, #1d4fa8 55%, #4682dc 100%);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.65rem;
+    background: rgba(255, 255, 255, 0.16);
+    font-weight: 700;
+}
+
+.brand-copy h2 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.brand-copy p {
+    max-width: 28rem;
+    font-size: 1.05rem;
+    opacity: 0.85;
+}
+
+.brand-copy ul {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+}
+
+.brand-copy li {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-bottom: 0.7rem;
+    opacity: 0.92;
+}
+
+.brand-copy li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: #ebc33c;
+}
+
+.brand-footer {
+    opacity: 0.6;
+}
+
+/* Formulário (lado direito) */
+.login-form-side {
+    display: grid;
+    place-items: center;
+    padding: 2rem 1.5rem;
+    background: #fff;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 24rem;
+}
+
+.login-card h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #101828;
+    margin-bottom: 0.35rem;
+}
+
+.subtitle {
+    color: #667085;
+    margin-bottom: 1.75rem;
+}
+
+.login-card label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #344054;
+    margin-bottom: 0.4rem;
+}
+
+.field {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 1.15rem;
+    border: 1px solid #d0d5dd;
+    border-radius: 0.55rem;
+    font-size: 1rem;
+    background: #fff;
+}
+
+.field:focus {
+    outline: none;
+    border-color: #1d4fa8;
+    box-shadow: 0 0 0 0.2rem rgba(29, 79, 168, 0.18);
+}
+
+.password-wrap {
+    position: relative;
+}
+
+.password-wrap .field {
+    padding-right: 5.5rem;
+}
+
+.toggle {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.6rem;
+    border: 0;
+    background: transparent;
+    color: #1d4fa8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.2rem 0.4rem;
+}
+
+.submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-top: 0.4rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background: #1d4fa8;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.submit:hover:not(:disabled) {
+    background: #17408a;
+}
+
+.submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.alert-error {
+    margin-bottom: 1.15rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #fecdca;
+    border-radius: 0.55rem;
+    background: #fef3f2;
+    color: #b42318;
+    font-size: 0.9rem;
+}
+
+/* Mobile: some o painel da marca e fica só o formulário */
+@media (max-width: 860px) {
+    .login {
+        grid-template-columns: 1fr;
+    }
+
+    .login-brand {
+        display: none;
+    }
+}
