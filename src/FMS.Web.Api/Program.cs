@@ -1,4 +1,9 @@
-using FMS.Web.Api.Infraestructure.Data;
+using System.Text;
+using FMS.Web.Api.Bussiness.Rules;
+using FMS.Web.Api.Bussiness.Rules.Features.Auth.Services;
+using FMS.Web.Api.Data.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +15,30 @@ builder.Services.AddAppDbContext(
     builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("ConnectionStrings:Default nao configurada."));
 
+
+var jwtOptions = builder.Configuration.GetSection(JwtOptions.Section).Get<JwtOptions>() ?? new JwtOptions();
+if (jwtOptions.Secret.Length < 32)
+    throw new InvalidOperationException("Jwt:Secret nao configurada ou menor que 32 caracteres.");
+
+builder.Services.AddBusinessRules(jwtOptions);
+builder.Services.AddControllers();
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
+
+await app.Services.ApplyMigrationsAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -19,6 +47,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.MapHealthChecks("/health");
 

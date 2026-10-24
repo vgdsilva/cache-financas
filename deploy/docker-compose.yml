@@ -19,21 +19,6 @@ services:
       retries: 5
       start_period: 10s
 
-  # Aplica migrations e seeds e encerra. O server so sobe depois que termina com sucesso.
-  migration:
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.migration
-    image: cache-financas-migration:latest
-    container_name: cache-financas-migration
-    restart: "no"
-    environment:
-      DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
-      ConnectionStrings__Default: Host=postgres;Port=5432;Database=${POSTGRES_DB:-cachefinancas};Username=${POSTGRES_USER:-cachefinancas};Password=${POSTGRES_PASSWORD}
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   server:
     build:
       context: ..
@@ -43,13 +28,12 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      Jwt__Secret: ${JWT_SECRET:?defina JWT_SECRET no deploy/.env (minimo 32 caracteres)}
       ConnectionStrings__Default: Host=postgres;Port=5432;Database=${POSTGRES_DB:-cachefinancas};Username=${POSTGRES_USER:-cachefinancas};Password=${POSTGRES_PASSWORD}
     # Sem "ports": so o web enxerga o server.
     depends_on:
       postgres:
         condition: service_healthy
-      migration:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3333/health"]
       interval: 15s
