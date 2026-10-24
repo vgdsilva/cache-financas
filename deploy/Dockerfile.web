@@ -8,10 +8,10 @@ FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG} AS build
 WORKDIR /src
 
 # Restore em camada separada: so invalida quando o .csproj muda
-COPY src/web/FMS.Web/FMS.Web.csproj web/FMS.Web/
+COPY src/FMS.Web/FMS.Web.csproj web/FMS.Web/
 RUN dotnet restore web/FMS.Web/FMS.Web.csproj
 
-COPY src/web/FMS.Web/ web/FMS.Web/
+COPY src/FMS.Web/ web/FMS.Web/
 RUN dotnet publish web/FMS.Web/FMS.Web.csproj \
     -c Release -o /app/publish --no-restore
 

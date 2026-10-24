@@ -6,4 +6,4 @@
 .github/
 tests/
 docs/
-src/api/
+src/FMS.Web.Api*/
