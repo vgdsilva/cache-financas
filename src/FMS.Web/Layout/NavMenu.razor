@@ -1,7 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+@implements IDisposable
+@inject FmsAuthenticationStateProvider AuthState
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">FMS.Web</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <a class="navbar-brand" href="">FMS</a>
+        <button title="Menu de navegação" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
@@ -9,21 +12,30 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+        @foreach (var menu in Roots)
+        {
+            @if (menu.Url is not null)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@menu.Url.TrimStart('/')" Match="@(menu.Url == "/" ? NavLinkMatch.All : NavLinkMatch.Prefix)">
+                        @menu.Description
+                    </NavLink>
+                </div>
+            }
+            else
+            {
+                <div class="nav-item px-3 nav-group">@menu.Description</div>
+            }
+
+            @foreach (var child in ChildrenOf(menu))
+            {
+                <div class="nav-item px-3 nav-child">
+                    <NavLink class="nav-link" href="@child.Url?.TrimStart('/')">
+                        @child.Description
+                    </NavLink>
+                </div>
+            }
+        }
     </nav>
 </div>
 
@@ -32,8 +44,24 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
+    private IEnumerable<MenuClaim> Visible => AuthState.Menus.Where(m => m.CanView).OrderBy(m => m.Ordem);
+
+    private IEnumerable<MenuClaim> Roots
     {
-        collapseNavMenu = !collapseNavMenu;
+        get
+        {
+            var ids = AuthState.Menus.Select(m => m.Id).ToHashSet();
+            return Visible.Where(m => m.ParentId is null || !ids.Contains(m.ParentId.Value));
+        }
     }
+
+    private IEnumerable<MenuClaim> ChildrenOf(MenuClaim parent) => Visible.Where(m => m.ParentId == parent.Id);
+
+    protected override void OnInitialized() => AuthState.AuthenticationStateChanged += OnAuthChanged;
+
+    private void OnAuthChanged(Task<AuthenticationState> _) => InvokeAsync(StateHasChanged);
+
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+    public void Dispose() => AuthState.AuthenticationStateChanged -= OnAuthChanged;
 }

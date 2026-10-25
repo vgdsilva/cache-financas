@@ -77,7 +77,8 @@ public class LoginCommandHandler(
 
         await RegisterAttemptAsync(command, user.Id, success: true, cancellationToken);
 
-        var (accessToken, accessExpiresAt) = tokens.CreateAccessToken(user, session.Id);
+        var loggedUser = await userBuilder.BuildAsync(user, cancellationToken);
+        var (accessToken, accessExpiresAt) = tokens.CreateAccessToken(user, session.Id, loggedUser.Permissions);
 
         return Result<LoginResultDto>.Success(new LoginResultDto
         {
@@ -85,7 +86,7 @@ public class LoginCommandHandler(
             AccessExpiresAt = accessExpiresAt,
             RefreshToken = refreshToken,
             RefreshExpiresAt = session.RefreshExpiresAt,
-            User = await userBuilder.BuildAsync(user, cancellationToken)
+            User = loggedUser
         });
     }
 

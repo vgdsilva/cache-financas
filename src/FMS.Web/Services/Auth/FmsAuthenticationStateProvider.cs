@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using FMS.Communication.Features.Auth.Dtos;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,12 +22,18 @@ public class FmsAuthenticationStateProvider(IJSRuntime js) : AuthenticationState
     public LoginResultDto? Session => _session;
     public string? AccessToken => _session?.AccessToken;
 
+    /// <summary>Menus liberados ao usuário, lidos do claim "menus" do JWT.</summary>
+    public IReadOnlyList<MenuClaim> Menus { get; private set; } = [];
+
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         await EnsureLoadedAsync();
 
         if (_session is null)
+        {
+            Menus = [];
             return Anonymous;
+        }
 
         if (_session.AccessExpiresAt <= DateTime.UtcNow)
         {
@@ -34,7 +41,8 @@ public class FmsAuthenticationStateProvider(IJSRuntime js) : AuthenticationState
             return Anonymous;
         }
 
-        return new AuthenticationState(CreatePrincipal(_session.User));
+        Menus = ReadMenus(_session.AccessToken);
+        return new AuthenticationState(CreatePrincipal(_session.User, Menus));
     }
 
     public async Task SignInAsync(LoginResultDto session)
@@ -48,6 +56,7 @@ public class FmsAuthenticationStateProvider(IJSRuntime js) : AuthenticationState
     public async Task SignOutAsync()
     {
         _session = null;
+        Menus = [];
         _loaded = true;
         await js.InvokeVoidAsync("localStorage.removeItem", StorageKey);
         NotifyAuthenticationStateChanged(Task.FromResult(Anonymous));
@@ -72,7 +81,7 @@ public class FmsAuthenticationStateProvider(IJSRuntime js) : AuthenticationState
         }
     }
 
-    private static ClaimsPrincipal CreatePrincipal(LoggedUserDto user)
+    private static ClaimsPrincipal CreatePrincipal(LoggedUserDto user, IEnumerable<MenuClaim> menus)
     {
         var claims = new List<Claim>
         {
@@ -84,8 +93,31 @@ public class FmsAuthenticationStateProvider(IJSRuntime js) : AuthenticationState
         if (user.IsAdmin)
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
 
-        claims.AddRange(user.Permissions.Where(p => p.CanView).Select(p => new Claim("permission", p.Code)));
+        claims.AddRange(menus.Where(m => m.CanView).Select(m => new Claim("permission", m.Code)));
 
         return new ClaimsPrincipal(new ClaimsIdentity(claims, authenticationType: "jwt"));
+    }
+
+    /// <summary>Lê o claim de menus direto do payload do JWT (a assinatura é validada pela API).</summary>
+    private static List<MenuClaim> ReadMenus(string jwt)
+    {
+        try
+        {
+            var parts = jwt.Split('.');
+            if (parts.Length < 2)
+                return [];
+
+            var payload = parts[1].Replace('-', '+').Replace('_', '/');
+            payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+
+            using var doc = JsonDocument.Parse(Encoding.UTF8.GetString(Convert.FromBase64String(payload)));
+            return doc.RootElement.TryGetProperty(MenuClaims.ClaimType, out var menus)
+                ? MenuClaims.Deserialize(menus.GetString())
+                : [];
+        }
+        catch (Exception ex) when (ex is FormatException or JsonException)
+        {
+            return [];
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using FMS.Communication.Features.Auth.Dtos;
 using FMS.Domain.entities;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ namespace FMS.Web.Api.Bussiness.Rules.Features.Auth.Services;
 
 public interface IJwtTokenService
 {
-    (string Token, DateTime ExpiresAt) CreateAccessToken(User user, Guid sessionId);
+    (string Token, DateTime ExpiresAt) CreateAccessToken(User user, Guid sessionId, IEnumerable<UserPermissionDto> menus);
 
     /// <summary>Gera um refresh token aleatório e o hash que deve ser persistido.</summary>
     (string Token, string Hash) CreateRefreshToken();
@@ -19,7 +20,7 @@ public interface IJwtTokenService
 
 public class JwtTokenService(JwtOptions options) : IJwtTokenService
 {
-    public (string Token, DateTime ExpiresAt) CreateAccessToken(User user, Guid sessionId)
+    public (string Token, DateTime ExpiresAt) CreateAccessToken(User user, Guid sessionId, IEnumerable<UserPermissionDto> menus)
     {
         var expiresAt = DateTime.UtcNow.AddMinutes(options.AccessTokenMinutes);
 
@@ -34,7 +35,8 @@ public class JwtTokenService(JwtOptions options) : IJwtTokenService
                 new Claim("sid", sessionId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Name, user.Name),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("is_admin", user.IsAdmin ? "true" : "false")
+                new Claim("is_admin", user.IsAdmin ? "true" : "false"),
+                new Claim(MenuClaims.ClaimType, MenuClaims.Serialize(menus))
             ]),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Secret)),

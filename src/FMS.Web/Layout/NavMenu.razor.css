@@ -81,3 +81,16 @@
         overflow-y: auto;
     }
 }
+
+.nav-group {
+    color: #d7d7d7;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 1rem;
+    padding-bottom: 0.25rem;
+}
+
+.nav-child {
+    padding-left: 1rem !important;
+}
