@@ -36,6 +36,8 @@ builder.Services
             ValidIssuer = jwtOptions.Issuer,
             ValidAudience = jwtOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+            NameClaimType = "name",
+            RoleClaimType = FMS.Communication.Features.Auth.AppRoles.ClaimType,
             ClockSkew = TimeSpan.FromSeconds(30)
         };
     });

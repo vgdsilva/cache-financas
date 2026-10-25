@@ -1,5 +1,6 @@
 using FMS.Web;
 using FMS.Web.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -13,6 +14,7 @@ var apiBase = new Uri(
     builder.Configuration["ApiBaseUrl"] ?? "/api/");
 
 builder.Services.AddAuthorizationCore();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, MenuPolicyProvider>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<FmsAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<FmsAuthenticationStateProvider>());

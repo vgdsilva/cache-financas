@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using FMS.Communication.Features.Auth;
 using FMS.Communication.Features.Auth.Dtos;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
@@ -90,8 +91,7 @@ public class FmsAuthenticationStateProvider(IJSRuntime js) : AuthenticationState
             new(ClaimTypes.Email, user.Email)
         };
 
-        if (user.IsAdmin)
-            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        claims.Add(new Claim(ClaimTypes.Role, AppRoles.For(user.IsAdmin)));
 
         claims.AddRange(menus.Where(m => m.CanView).Select(m => new Claim("permission", m.Code)));
 

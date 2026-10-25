@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using FMS.Communication.Features.Auth;
 using FMS.Communication.Features.Auth.Dtos;
 using FMS.Domain.entities;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -36,6 +37,7 @@ public class JwtTokenService(JwtOptions options) : IJwtTokenService
                 new Claim(JwtRegisteredClaimNames.Name, user.Name),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("is_admin", user.IsAdmin ? "true" : "false"),
+                new Claim(AppRoles.ClaimType, AppRoles.For(user.IsAdmin)),
                 new Claim(MenuClaims.ClaimType, MenuClaims.Serialize(menus))
             ]),
             SigningCredentials = new SigningCredentials(

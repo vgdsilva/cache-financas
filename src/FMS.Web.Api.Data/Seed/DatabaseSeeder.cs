@@ -21,7 +21,7 @@ public class DatabaseSeeder(AppDbContext context, SeedOptions options, ILogger<D
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         await SeedMenusAsync(cancellationToken);
-        await SeedAdminAsync(cancellationToken);
+        await SeedUsersAsync(cancellationToken);
     }
 
     private async Task SeedMenusAsync(CancellationToken cancellationToken)
@@ -52,33 +52,55 @@ public class DatabaseSeeder(AppDbContext context, SeedOptions options, ILogger<D
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task SeedAdminAsync(CancellationToken cancellationToken)
+    private async Task SeedUsersAsync(CancellationToken cancellationToken)
     {
-        var login = options.Login.Trim();
+        await SeedUserAsync(options.Admin, "Admin", isAdmin: true, cancellationToken);
+        await SeedUserAsync(options.User, "Seed:User", isAdmin: false, cancellationToken);
+    }
+
+    private async Task SeedUserAsync(SeedUser seed, string name, bool isAdmin, CancellationToken cancellationToken)
+    {
+        var login = seed.Login.Trim();
 
         if (await context.Users.IgnoreQueryFilters().AnyAsync(x => x.Login.ToLower() == login.ToLower(), cancellationToken))
             return;
 
-        if (string.IsNullOrWhiteSpace(options.Password))
+        if (string.IsNullOrWhiteSpace(seed.Password))
         {
-            logger.LogWarning("Usuário admin não criado: {Section}:Password não configurada.", SeedOptions.Section);
+            logger.LogInformation("Usuário '{Login}' não criado: senha não configurada ({Name}).", login, name);
             return;
         }
 
-        var admin = new User
+        var user = new User
         {
             Id = Guid.NewGuid(),
-            Name = options.Name,
+            Name = seed.Name,
             Login = login,
-            Email = options.Email.Trim(),
-            IsAdmin = true,
-            MustChangePassword = true
+            Email = seed.Email.Trim(),
+            IsAdmin = isAdmin,
+            MustChangePassword = isAdmin
         };
-        admin.PasswordHash = new PasswordHasher<User>().HashPassword(admin, options.Password);
+        user.PasswordHash = new PasswordHasher<User>().HashPassword(user, seed.Password);
+        context.Users.Add(user);
 
-        context.Users.Add(admin);
+        // Usuário comum começa apenas com acesso de visualização à Home; admin enxerga tudo sem linhas de permissão.
+        if (!isAdmin)
+        {
+            var home = await context.MenuItems.FirstOrDefaultAsync(x => x.Code == "HOME", cancellationToken);
+            if (home is not null)
+            {
+                context.UserMenuPermissions.Add(new UserMenuPermission
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    MenuItemId = home.Id,
+                    CanView = true
+                });
+            }
+        }
+
         await context.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Usuário admin '{Login}' criado.", login);
+        logger.LogInformation("Usuário '{Login}' criado.", login);
     }
 }
