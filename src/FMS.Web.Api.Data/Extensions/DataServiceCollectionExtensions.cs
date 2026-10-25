@@ -1,5 +1,6 @@
 using FMS.Web.Api.Data.Context;
 using FMS.Web.Api.Data.Repositories;
+using FMS.Web.Api.Data.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,8 +22,15 @@ public static class DataServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddDatabaseSeed(this IServiceCollection services, SeedOptions options)
+    {
+        services.AddSingleton(options);
+        services.AddScoped<DatabaseSeeder>();
+        return services;
+    }
+
     /// <summary>
-    /// Aplica as migrations pendentes. Falhas são registradas em log e não derrubam a aplicação.
+    /// Aplica as migrations pendentes e a carga inicial (se registrada). Falhas são registradas em log e não derrubam a aplicação.
     /// </summary>
     public static async Task ApplyMigrationsAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
     {
@@ -34,10 +42,14 @@ public static class DataServiceCollectionExtensions
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await context.Database.MigrateAsync(cancellationToken);
             logger.LogInformation("Migrations aplicadas com sucesso.");
+
+            var seeder = scope.ServiceProvider.GetService<DatabaseSeeder>();
+            if (seeder is not null)
+                await seeder.SeedAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Falha ao aplicar migrations. A aplicação continuará iniciando.");
+            logger.LogError(ex, "Falha ao aplicar migrations/seed. A aplicação continuará iniciando.");
         }
     }
 }

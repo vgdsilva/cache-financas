@@ -28,6 +28,8 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      # Cria o admin inicial somente se ainda nao existir; pode ser removida depois do primeiro start.
+      Seed__Admin__Password: ${SEED_ADMIN_PASSWORD:-}
       Jwt__Secret: ${JWT_SECRET:?defina JWT_SECRET no deploy/.env (minimo 32 caracteres)}
       # Sem TTY no container: forca as cores do console no "docker compose logs".
       Logging__Console__FormatterOptions__ColorBehavior: Enabled

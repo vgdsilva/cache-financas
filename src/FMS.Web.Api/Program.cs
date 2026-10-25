@@ -2,6 +2,7 @@ using System.Text;
 using FMS.Web.Api.Bussiness.Rules;
 using FMS.Web.Api.Bussiness.Rules.Features.Auth.Services;
 using FMS.Web.Api.Data.Extensions;
+using FMS.Web.Api.Data.Seed;
 using FMS.Web.Api.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +24,7 @@ var jwtOptions = builder.Configuration.GetSection(JwtOptions.Section).Get<JwtOpt
 if (jwtOptions.Secret.Length < 32)
     throw new InvalidOperationException("Jwt:Secret nao configurada ou menor que 32 caracteres.");
 
+builder.Services.AddDatabaseSeed(builder.Configuration.GetSection(SeedOptions.Section).Get<SeedOptions>() ?? new SeedOptions());
 builder.Services.AddBusinessRules(jwtOptions);
 builder.Services.AddControllers();
 builder.Services
