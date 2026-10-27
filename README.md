@@ -6,8 +6,9 @@ Plataforma web privada de finanças pessoais, auto-hospedada em VPS, para uso de
 
 | Documento | Conteúdo |
 |---|---|
+| [Mapa do projeto](docs/mapa-do-projeto.excalidraw) | Diagrama Excalidraw: produto, infraestrutura, projetos, modelo de dados, autenticação e estado atual |
 | [Visão do produto](docs/PRODUCT.md) | Problema, público, objetivos e o que fica fora do escopo |
-| [Roadmap](02-roadmap.md) | Entregas planejadas, em ordem, com critérios de pronto |
+| [Roadmap](docs/ROADMAP.md) | Entregas planejadas, em ordem, com critérios de pronto |
 | [Arquitetura](docs/ARQUITECTURE.md) | Stack, containers, estrutura da solução, deploy e observabilidade |
 | [Segurança e acesso](04-seguranca-e-acesso.md) | Isolamento de dados, perfis, permissões, root, sessões e auditoria |
 | [Modelo de domínio](05-modelo-de-dominio.md) | Entidades, convenções e regras de negócio |

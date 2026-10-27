@@ -25,7 +25,7 @@ A ordem é intencional: os gastos geram os dados que as metas usam (quanto sobra
 
 - **Mobile-first.** A maioria dos lançamentos acontece no celular, na hora da compra. Lançar uma despesa deve levar segundos.
 - **Entrada de dados sem atrito.** Lançamento manual rápido primeiro, chat com IA em seguida, Open Finance no futuro.
-- **Privacidade por padrão.** Cada usuário vê apenas os próprios dados financeiros, inclusive em relação ao administrador.
+- **Privacidade por padrão.** Cada usuário vê apenas os próprios dados financeiros, inclusive em relação ao administrador. A única exceção é o console de consultas do root, uma conta de sistema única que consulta qualquer tabela do banco; cada consulta fica registrada na auditoria.
 - **Nada acontece em silêncio.** Qualquer dado gerado automaticamente (pela IA ou por integrações) é confirmado ou rastreável.
 
 ## Fora do escopo (por enquanto)
