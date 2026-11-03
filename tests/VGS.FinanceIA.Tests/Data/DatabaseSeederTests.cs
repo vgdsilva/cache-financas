@@ -32,6 +32,73 @@ public class DatabaseSeederTests(PostgresFixture postgres) : IClassFixture<Postg
     }
 
     [DockerFact]
+    public async Task SeedMenus_UpdatesUrlOfExistingMenu()
+    {
+        await using var db = postgres.CreateDbContext();
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        var users = await db.MenuItems.SingleAsync(m => m.Code == Menus.Users);
+        users.Url = "/Users"; // URL antiga, de antes da convenção "caminho do menu"
+        await db.SaveChangesAsync();
+
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        await using var fresh = postgres.CreateDbContext();
+        var expected = Menus.All.Single(d => d.Code == Menus.Users).Url;
+        Assert.Equal(expected, (await fresh.MenuItems.SingleAsync(m => m.Code == Menus.Users)).Url);
+    }
+
+    [DockerFact]
+    public async Task SeedMenus_MovesExistingMenuToItsNewParent()
+    {
+        await using var db = postgres.CreateDbContext();
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        var accounts = await db.MenuItems.SingleAsync(m => m.Code == Menus.Accounts);
+        accounts.ParentId = null; // estrutura antiga: menu solto no primeiro nível
+        await db.SaveChangesAsync();
+
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        await using var fresh = postgres.CreateDbContext();
+        var moved = await fresh.MenuItems.Include(m => m.Parent).SingleAsync(m => m.Code == Menus.Accounts);
+        Assert.Equal(Menus.Registry, moved.Parent?.Code);
+    }
+
+    [DockerFact]
+    public async Task SeedMenus_DeactivatesMenusThatLeftTheCatalog_ButKeepsTheRow()
+    {
+        await using var db = postgres.CreateDbContext();
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        db.MenuItems.Add(new VGS.FinanceIA.Data.Types.MenuItem { Code = "OLD.MENU", Description = "Antigo", Url = "/antigo" });
+        await db.SaveChangesAsync();
+
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        await using var fresh = postgres.CreateDbContext();
+        var old = await fresh.MenuItems.SingleAsync(m => m.Code == "OLD.MENU");
+        Assert.False(old.IsActive);
+        Assert.True(await fresh.MenuItems.Where(m => Menus.All.Select(d => d.Code).Contains(m.Code)).AllAsync(m => m.IsActive));
+    }
+
+    [DockerFact]
+    public async Task SeedMenus_KeepsMenuDeactivatedByHand()
+    {
+        await using var db = postgres.CreateDbContext();
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        var wallet = await db.MenuItems.SingleAsync(m => m.Code == Menus.Wallet);
+        wallet.IsActive = false;
+        await db.SaveChangesAsync();
+
+        await TestHandlers.Seeder(db).SeedMenusAsync();
+
+        await using var fresh = postgres.CreateDbContext();
+        Assert.False((await fresh.MenuItems.SingleAsync(m => m.Code == Menus.Wallet)).IsActive);
+    }
+
+    [DockerFact]
     public async Task SeedMenus_DoesNotRecreateDeletedMenu()
     {
         await using var db = postgres.CreateDbContext();

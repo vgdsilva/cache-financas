@@ -91,6 +91,6 @@ public class MenuAuthorizationTests
     {
         var attribute = new RequireMenuAttribute(Menus.Transactions);
 
-        Assert.Equal("menu:FIN.TRANSACTIONS", attribute.Policy);
+        Assert.Equal("menu:REG.TRANSACTIONS", attribute.Policy);
     }
 }

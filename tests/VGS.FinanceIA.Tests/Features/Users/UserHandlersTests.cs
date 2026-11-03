@@ -49,8 +49,34 @@ public class PasswordLengthTests
     }
 }
 
+public class UserProfileTests
+{
+    [Theory]
+    [InlineData(true, "Administrador")]
+    [InlineData(false, "Usuário")]
+    public void RoleLabel_FollowsIsAdmin(bool isAdmin, string expected)
+        => Assert.Equal(expected, new UserProfile("x", isAdmin).RoleLabel);
+}
+
 public class UserHandlersTests(PostgresFixture postgres) : IClassFixture<PostgresFixture>
 {
+    [DockerFact]
+    public async Task GetUserProfile_ReturnsNameAndRole_AndNullForDeletedUser()
+    {
+        await using var db = postgres.CreateDbContext();
+        var adminId = await TestHandlers.CreateUserAsync(db, isAdmin: true);
+        var handler = new GetUserProfileHandler(db);
+
+        var profile = await handler.HandleAsync(new GetUserProfileQuery(adminId));
+        Assert.True(profile?.IsAdmin);
+
+        db.Users.Remove(await db.Users.SingleAsync(u => u.Id == adminId));
+        await db.SaveChangesAsync();
+
+        Assert.Null(await handler.HandleAsync(new GetUserProfileQuery(adminId)));
+        Assert.Null(await handler.HandleAsync(new GetUserProfileQuery(Guid.NewGuid())));
+    }
+
     [DockerFact]
     public async Task CreateUser_NormalizesName_AndHashesPassword()
     {

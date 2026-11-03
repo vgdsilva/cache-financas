@@ -12,15 +12,23 @@ public class AppNavSectionsTests
     private static IReadOnlyList<MenuEntry> All() => Menus.All.Select(Entry).ToList();
 
     [Fact]
-    public void Admin_GetsTopSection_AndSettingsGroupWithChildren()
+    public void Admin_GetsPrincipalCadastrosAndConfiguracoes_InOrder()
     {
         var sections = AppNavViewComponent.BuildSections(All());
 
-        Assert.Equal(2, sections.Count);
-        Assert.Null(sections[0].Title);
-        Assert.Equal([Menus.Transactions, Menus.Accounts, Menus.Categories, Menus.Chat], sections[0].Items.Select(i => i.Code));
-        Assert.Equal("Configurações", sections[1].Title);
-        Assert.Equal([Menus.Users], sections[1].Items.Select(i => i.Code));
+        Assert.Equal([AppNavViewComponent.MainSectionTitle, "Cadastros", "Configurações"], sections.Select(s => s.Title));
+        Assert.Equal([Menus.Dashboard, Menus.Wallet, Menus.Chat], sections[0].Items.Select(i => i.Code));
+        Assert.Equal([Menus.Accounts, Menus.Transactions, Menus.Categories], sections[1].Items.Select(i => i.Code));
+        Assert.Equal([Menus.Users], sections[2].Items.Select(i => i.Code));
+    }
+
+    [Fact]
+    public void CacauIa_IsTheChatMenu_InPrincipal()
+    {
+        var chat = AppNavViewComponent.BuildSections(All())[0].Items.Single(i => i.Code == Menus.Chat);
+
+        Assert.Equal("Cacau IA", chat.Description);
+        Assert.Equal("/cacau-ia", chat.Url);
     }
 
     [Fact]
@@ -28,7 +36,7 @@ public class AppNavSectionsTests
     {
         var sections = AppNavViewComponent.BuildSections(All());
 
-        Assert.DoesNotContain(sections.SelectMany(s => s.Items), i => i.Code == Menus.Settings);
+        Assert.DoesNotContain(sections.SelectMany(s => s.Items), i => i.Code is Menus.Settings or Menus.Registry);
     }
 
     [Fact]
@@ -50,7 +58,7 @@ public class AppNavSectionsTests
         var sections = AppNavViewComponent.BuildSections(menus);
 
         Assert.Single(sections);
-        Assert.Null(sections[0].Title);
+        Assert.Equal(AppNavViewComponent.MainSectionTitle, sections[0].Title);
         Assert.Equal([Menus.Users], sections[0].Items.Select(i => i.Code));
     }
 
@@ -62,7 +70,7 @@ public class AppNavSectionsTests
     [InlineData("ana", "A")]
     [InlineData("", "?")]
     public void Initial_IsFirstLetterUppercased(string name, string expected)
-        => Assert.Equal(expected, new AppNavModel(name, []).Initial);
+        => Assert.Equal(expected, new AppHeaderModel(name, string.Empty, false, null).Initial);
 
     [Fact]
     public void EveryCatalogIcon_HasAnSvg_AndUnknownFallsBack()
