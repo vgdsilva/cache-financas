@@ -83,6 +83,17 @@ dotnet test          # testes de integração exigem Docker (Testcontainers); se
 - Toda página sob a URL de um menu declara `[RequireMenu(Menus.X)]` desse mesmo menu, e toda página que exige um menu vive sob a URL dele. Os testes `Menus_*` e `PageRoutesTests` garantem isso.
 - Fora dessa regra (não são menu): `/Login`, `/Logout`, `/AccessDenied`, `/Error`, `/health`.
 
+## Cadastro de usuários (`/configuracoes/usuarios`)
+
+- Telas em `Pages/Configuracoes/Usuarios/`: `Index` (lista + busca `?q=`), `Criar` (`/create`), `Editar` (`/edit/{id}`), `Senha` (`/password/{id}`, redefinir senha) e `Excluir` (`/delete/{id}`, confirmação). `Criar` e `Editar` dividem o `_Formulario` (base `UsuarioFormPageModel`).
+- Handlers em `Features/Users` (`ListUsers`, `GetUser`, `RegisterUser`, `UpdateUser`, `ChangeUserPassword`, `DeleteUser`) e `Features/Permissions` (`SetUserMenus`, `ListAssignableMenus`). `CreateUser` é o bloco básico, **sem** checar quem pede (usado pelo seed); a tela usa `RegisterUser`.
+- **Só administrador gerencia usuários** (criar, editar, redefinir senha, excluir): imposto nos handlers por `UserRules.RequireAdminAsync`. As páginas só escondem botões/redirecionam para `/AccessDenied`. Motivo: usuário comum com o menu "Usuários" poderia criar admins ou conceder menus que não tem.
+- Proteções: ninguém exclui a si mesmo; sempre sobra pelo menos um administrador (ao excluir ou ao tirar o perfil de admin). Excluir é lógico e leva as permissões e configurações do usuário. Nome liberado pode ser reutilizado.
+- Administrador acessa todos os menus, então a escolha de menus só vale para usuário comum (fica desabilitada no formulário e é ignorada pelos handlers).
+- Só os menus que são páginas (com URL) são atribuíveis; `SetUserMenus` concede/revoga para ficar exatamente igual ao conjunto enviado e invalida o cache de permissões.
+- Erro de regra de negócio = `BusinessRuleException` (`Framework/Cqrs`), com mensagem para o usuário final. A UI captura **só** essa (via `TryRunAsync`) e mostra no formulário; qualquer outra exceção é bug e segue como erro. Mensagem de sucesso vai em `TempData["Success"]` (o `_Layout` exibe).
+- Sem coluna nova em `users` (usuário, hash, `IsAdmin`); não precisou de migration.
+
 ## Layout e navegação
 
 - CSS e JS próprios (`wwwroot/css/site.css`, `wwwroot/js/site.js`), sem Bootstrap/Tailwind e sem Node. Cores e medidas são variáveis em `:root`.
