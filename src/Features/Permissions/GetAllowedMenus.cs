@@ -8,7 +8,10 @@ namespace VGS.FinanceIA.Features.Permissions;
 /// <summary>Menu liberado ao usuário. <paramref name="ParentCode"/> é o menu pai (agrupador), quando houver.</summary>
 public sealed record MenuEntry(string Code, string Description, string? Icon, string? Url, int SortOrder, string? ParentCode = null);
 
-/// <summary>Menus ativos liberados ao usuário, ordenados. Administrador recebe todos.</summary>
+/// <summary>
+/// Menus ativos liberados ao usuário, ordenados. Administrador recebe todos. Usuário comum recebe as páginas
+/// concedidas e, só para exibição, o agrupador de cada grupo em que tem ao menos uma página.
+/// </summary>
 public sealed record GetAllowedMenusQuery(Guid UserId) : IQuery<IReadOnlyList<MenuEntry>>;
 
 public sealed class GetAllowedMenusHandler(AppDbContext db, IMemoryCache cache)
@@ -45,7 +48,13 @@ public sealed class GetAllowedMenusHandler(AppDbContext db, IMemoryCache cache)
 
         if (!user.IsAdmin)
         {
-            menus = menus.Where(m => db.UserMenuPermissions.Any(p => p.UserId == userId && p.MenuItemId == m.Id));
+            // Agrupadores (ex.: Cadastros) não são concedidos a ninguém: vêm junto quando o usuário tem ao menos
+            // uma página do grupo. Sem isso a sidebar não saberia o título da seção e jogaria tudo em "Principal".
+            var granted = db.UserMenuPermissions.Where(p => p.UserId == userId).Select(p => p.MenuItemId);
+
+            menus = menus.Where(m =>
+                granted.Contains(m.Id)
+                || (m.Url == null && db.MenuItems.Any(child => child.ParentId == m.Id && child.IsActive && granted.Contains(child.Id))));
         }
 
         return await menus
