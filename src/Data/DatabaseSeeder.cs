@@ -48,10 +48,13 @@ public sealed class DatabaseSeeder(AppDbContext db, ICommandHandler<EnsureInitia
             {
                 if (existing.SystemDeleted == Guid.Empty)
                 {
+                    // O catálogo é a fonte da verdade da estrutura (texto, ícone, URL, ordem e pai).
+                    // IsActive não é tocado aqui: desativar um menu à mão continua valendo.
                     existing.Description = definition.Description;
                     existing.Icon = definition.Icon;
                     existing.Url = definition.Url;
                     existing.SortOrder = definition.SortOrder;
+                    existing.ParentId = definition.ParentCode is null ? null : byCode[definition.ParentCode].Id;
                 }
 
                 continue;
@@ -69,6 +72,15 @@ public sealed class DatabaseSeeder(AppDbContext db, ICommandHandler<EnsureInitia
 
             db.MenuItems.Add(menu);
             byCode[definition.Code] = menu;
+        }
+
+        // Menu que saiu do catálogo é desativado (não apagado: pode haver permissões apontando para ele).
+        var catalogCodes = Menus.All.Select(d => d.Code).ToHashSet();
+
+        foreach (var obsolete in all.Where(m => m.SystemDeleted == Guid.Empty && m.IsActive && !catalogCodes.Contains(m.Code)))
+        {
+            obsolete.IsActive = false;
+            logger.LogInformation("Menu '{Code}' não está mais no catálogo e foi desativado.", obsolete.Code);
         }
 
         await db.SaveChangesAsync(cancellationToken);

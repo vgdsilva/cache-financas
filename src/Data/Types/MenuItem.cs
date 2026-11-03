@@ -8,7 +8,7 @@ namespace VGS.FinanceIA.Data.Types;
 [Index(nameof(Code), nameof(SystemDeleted), IsUnique = true)]
 public class MenuItem : EntityControl
 {
-    /// <summary>Chave estável usada em permissões e policies, ex.: FIN.TRANSACTIONS.</summary>
+    /// <summary>Chave estável usada em permissões e policies, ex.: REG.TRANSACTIONS.</summary>
     [Column("code", TypeName = "text")]
     public string Code { get; set; } = string.Empty;
 
