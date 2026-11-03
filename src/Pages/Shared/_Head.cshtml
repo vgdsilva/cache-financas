@@ -1,8 +1,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="color-scheme" content="light dark" />
-<title>@ViewData["Title"] - FinanceIA</title>
-@* Aplica o estado "recolhido" antes da primeira pintura, para a sidebar não piscar expandida. *@
-<script>try{if(localStorage.getItem("nav-collapsed")==="1")document.documentElement.classList.add("nav-collapsed")}catch(e){}</script>
+<title>@ViewData["Title"] - CacheFinancas</title>
+@* Aplica o tema escolhido ("light"/"dark"; sem valor = segue o aparelho) e o estado "recolhido" da sidebar
+   antes da primeira pintura, para a página não piscar no tema/estado errado. *@
+<script>try{var d=document.documentElement,t=localStorage.getItem("theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t);if(localStorage.getItem("nav-collapsed")==="1")d.classList.add("nav-collapsed")}catch(e){}</script>
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 <script src="~/js/site.js" asp-append-version="true" defer></script>

@@ -1,0 +1,19 @@
+@* Página base de um menu: cabeçalho (seção e título vindos do catálogo) + aviso. Model = código do menu. *@
+@model string
+@{
+    var menu = Menus.Find(Model) ?? throw new InvalidOperationException($"Menu '{Model}' não existe no catálogo.");
+    var parentTitle = menu.ParentCode is null ? null : Menus.Find(menu.ParentCode)?.Description;
+}
+
+<div class="page-header">
+  @if (parentTitle is not null)
+  {
+    <div class="page-crumb">@parentTitle</div>
+  }
+  <h1>@menu.Description</h1>
+</div>
+
+<div class="card">
+  <p class="card-title">Em construção</p>
+  <p class="card-text">Esta tela ainda será construída. A rota <code>@menu.Url</code> e a permissão do menu já estão valendo.</p>
+</div>

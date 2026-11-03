@@ -1,43 +1,33 @@
 @using VGS.FinanceIA.ViewComponents
 @model AppNavModel
 
-@* Mobile: topbar com hambúrguer; o menu desce abaixo dela. Desktop: a topbar some e a sidebar fica fixa. *@
-<header class="topbar">
-  <a class="brand" href="/">
-    <span class="brand-mark" aria-hidden="true">F</span>
-    <span class="brand-name">FinanceIA</span>
-  </a>
-  <button type="button" class="nav-toggler" data-nav-toggle aria-controls="app-menu" aria-expanded="false" aria-label="Abrir menu">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-      <path class="icon-bars" d="M4 6h16M4 12h16M4 18h16" />
-      <path class="icon-close" d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  </button>
-</header>
-
 <div class="nav-backdrop" data-nav-backdrop></div>
 
 <aside class="sidebar" id="app-menu">
   <div class="sidebar-head">
-    <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true">F</span>
-      <span class="brand-name">FinanceIA</span>
+    <a class="brand" href="/" title="Ir para a página inicial" aria-label="Ir para a página inicial">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span class="brand-name">CacheFinancas</span>
     </a>
-    <button type="button" class="collapse-btn" data-nav-collapse aria-expanded="true" aria-label="Recolher menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M15 6l-6 6 6 6" />
-      </svg>
-    </button>
+    <div class="sidebar-head-actions">
+      <button type="button" class="icon-btn icon-btn--sm collapse-btn" data-nav-collapse aria-expanded="true" title="Recolher menu" aria-label="Recolher menu">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M12.7 4.3a1 1 0 010 1.4L8.4 10l4.3 4.3a1 1 0 11-1.4 1.4l-5-5a1 1 0 010-1.4l5-5a1 1 0 011.4 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button type="button" class="icon-btn icon-btn--sm close-btn" data-nav-close title="Fechar menu" aria-label="Fechar menu">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+        </svg>
+      </button>
+    </div>
   </div>
 
   <nav class="nav" aria-label="Navegação principal">
     @foreach (var group in Model.Sections)
     {
       <div class="nav-section">
-        @if (group.Title is not null)
-        {
-          <p class="nav-section-title">@group.Title</p>
-        }
+        <div class="nav-section-title">@group.Title</div>
         <ul class="nav-list">
           @foreach (var item in group.Items)
           {
@@ -53,17 +43,4 @@
       </div>
     }
   </nav>
-
-  <div class="sidebar-foot">
-    <div class="user">
-      <span class="avatar" aria-hidden="true">@Model.Initial</span>
-      <span class="user-name nav-label">@Model.UserName</span>
-    </div>
-    <form method="post" asp-page="/Logout">
-      <button type="submit" class="nav-link nav-button" title="Sair">
-        @NavIcons.Render("logout")
-        <span class="nav-label">Sair</span>
-      </button>
-    </form>
-  </div>
 </aside>

@@ -9,11 +9,12 @@
     <a class="skip-link" href="#main">Ir para o conteúdo</a>
     <div class="app-shell" data-app-shell>
       @await Component.InvokeAsync("AppNav")
-      <main class="content" id="main">
-        <div class="content-inner">
+      <div class="app-col">
+        @await Component.InvokeAsync("AppHeader")
+        <main class="app-main" id="main">
           @RenderBody()
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   }
   else

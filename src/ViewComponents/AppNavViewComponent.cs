@@ -5,20 +5,19 @@ using VGS.FinanceIA.Framework.Cqrs;
 
 namespace VGS.FinanceIA.ViewComponents;
 
-/// <summary>Grupo de links da navegação. <paramref name="Title"/> nulo = grupo sem título (topo).</summary>
-public sealed record NavSection(string? Title, IReadOnlyList<MenuEntry> Items);
+/// <summary>Grupo de links da sidebar, sempre com título.</summary>
+public sealed record NavSection(string Title, IReadOnlyList<MenuEntry> Items);
 
-public sealed record AppNavModel(string UserName, IReadOnlyList<NavSection> Sections)
-{
-    public string Initial => UserName.Length > 0 ? UserName[..1].ToUpperInvariant() : "?";
-}
+public sealed record AppNavModel(IReadOnlyList<NavSection> Sections);
 
 /// <summary>
-/// Navegação principal (topbar com hambúrguer no mobile, sidebar no desktop).
-/// Mostra apenas os menus liberados ao usuário logado.
+/// Sidebar (gaveta no mobile, fixa e recolhível no desktop). Mostra apenas os menus liberados ao usuário logado.
 /// </summary>
 public class AppNavViewComponent(IQueryHandler<GetAllowedMenusQuery, IReadOnlyList<MenuEntry>> allowedMenus) : ViewComponent
 {
+    /// <summary>Título da seção com os menus de primeiro nível (os que não estão dentro de um agrupador).</summary>
+    public const string MainSectionTitle = "Principal";
+
     public async Task<IViewComponentResult> InvokeAsync()
     {
         var userId = CurrentUser.GetId(HttpContext.User);
@@ -30,12 +29,12 @@ public class AppNavViewComponent(IQueryHandler<GetAllowedMenusQuery, IReadOnlyLi
 
         var menus = await allowedMenus.HandleAsync(new GetAllowedMenusQuery(userId.Value));
 
-        return View(new AppNavModel(HttpContext.User.Identity?.Name ?? string.Empty, BuildSections(menus)));
+        return View(new AppNavModel(BuildSections(menus)));
     }
 
     /// <summary>
     /// Menus sem URL são agrupadores (ex.: Configurações): viram o título de uma seção com os filhos liberados.
-    /// Itens sem pai (ou cujo pai não está liberado ao usuário) ficam na seção sem título, no topo.
+    /// Itens sem pai (ou cujo pai não está liberado ao usuário) ficam na seção "Principal", no topo.
     /// </summary>
     internal static IReadOnlyList<NavSection> BuildSections(IReadOnlyList<MenuEntry> menus)
     {
@@ -49,7 +48,7 @@ public class AppNavViewComponent(IQueryHandler<GetAllowedMenusQuery, IReadOnlyLi
 
         if (top.Count > 0)
         {
-            sections.Add(new NavSection(null, top));
+            sections.Add(new NavSection(MainSectionTitle, top));
         }
 
         foreach (var header in headers.OrderBy(h => h.SortOrder))
