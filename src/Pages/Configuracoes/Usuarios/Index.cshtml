@@ -2,94 +2,102 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Usuários";
+    var total = Model.Users.Count;
 }
 
-<div class="page-header page-header--split">
-  <div>
-    <div class="page-crumb">Configurações</div>
-    <h1>Usuários</h1>
-    <p class="page-sub">@(Model.Users.Count == 1 ? "1 usuário" : $"{Model.Users.Count} usuários")@(string.IsNullOrWhiteSpace(Model.Search) ? " cadastrados" : " encontrados")</p>
-  </div>
+<header class="page-head">
+  <h1 class="page-title">Usuários</h1>
   @if (Model.IsAdmin)
   {
-    <a class="btn btn-primary btn-sm" asp-page="Criar">Novo usuário</a>
+    <div class="page-actions">
+      <a class="btn btn-primary" asp-page="Criar">Novo usuário</a>
+    </div>
   }
-</div>
+</header>
 
-<form method="get" class="toolbar" role="search">
-  <input type="search" name="q" value="@Model.Search" placeholder="Buscar usuário" aria-label="Buscar usuário" autocomplete="off" />
-  <button type="submit" class="btn btn-secondary btn-sm">Buscar</button>
-  @if (!string.IsNullOrWhiteSpace(Model.Search))
-  {
-    <a class="btn btn-ghost btn-sm" asp-page="Index">Limpar</a>
-  }
-</form>
-
-@if (Model.Users.Count == 0)
-{
-  <div class="card">
-    <p class="card-title">Nenhum usuário encontrado</p>
-    <p class="card-text">@(string.IsNullOrWhiteSpace(Model.Search) ? "Ainda não há usuários cadastrados." : "Nenhum usuário corresponde à busca.")</p>
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">Usuários cadastrados</h2>
+    <div class="section-actions">
+      <a class="text-action" asp-page="Index"><partial name="_Icone" model='"atualizar"' /> Atualizar</a>
+    </div>
   </div>
-}
-else
-{
-  <div class="table-wrap">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Usuário</th>
-          <th class="col-hide-sm">E-mail</th>
-          <th>Perfil</th>
-          <th class="col-hide-sm">Menus</th>
-          <th class="col-hide-sm">Criado em</th>
-          @if (Model.IsAdmin)
-          {
-            <th class="col-actions"><span class="sr-only">Ações</span></th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var user in Model.Users)
-        {
-          var isSelf = user.Id == Model.CurrentUserId;
+
+  @* Tabela do padrão de CRUD: cabeçalho → linha de filtros → dados. Filtros e paginação rodam no navegador (site.js, [data-grid]). *@
+  <div class="data-grid-wrap" data-grid data-page-size="10">
+    <div class="data-grid-scroll">
+      <table class="data-grid">
+        <thead>
           <tr>
-            <td>
-              <div class="cell-user">
-                <span class="avatar" aria-hidden="true">@user.DisplayName[..1].ToUpperInvariant()</span>
-                <div class="cell-user-text">
-                  <span class="cell-user-name">@user.DisplayName @if (isSelf) { <span class="badge">você</span> }</span>
-                  <span class="cell-user-sub">@user.UserName</span>
-                </div>
-              </div>
-            </td>
-            <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.Email) ? "—" : user.Email)</td>
-            <td>
-              @if (user.IsAdmin)
-              {
-                <span class="badge badge--brand">Administrador</span>
-              }
-              else
-              {
-                <span class="badge">Usuário</span>
-              }
-            </td>
-            <td class="col-hide-sm">@(user.IsAdmin ? "Todos" : user.MenuCount.ToString())</td>
-            <td class="col-hide-sm">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+            <th>Usuário</th>
+            <th class="col-hide-sm">Nome</th>
+            <th class="col-hide-sm">E-mail</th>
+            <th>Perfil</th>
+            <th class="col-hide-sm">Menus</th>
+            <th class="col-hide-sm">Criado em</th>
             @if (Model.IsAdmin)
             {
-              <td class="col-actions">
-                <a class="link-action" asp-page="Editar" asp-route-id="@user.Id">Editar</a>
-                <a class="link-action" asp-page="Senha" asp-route-id="@user.Id">Senha</a>
-                @if (!isSelf)
-                {
-                  <a class="link-action link-action--danger" asp-page="Excluir" asp-route-id="@user.Id">Excluir</a>
-                }
-              </td>
+              <th class="col-actions"><span class="sr-only">Ações</span></th>
             }
           </tr>
-        }
-      </tbody>
-    </table>
+          <tr class="grid-filter">
+            <td><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="0" aria-label="Filtrar por usuário" autocomplete="off" /></label></td>
+            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="1" aria-label="Filtrar por nome" autocomplete="off" /></label></td>
+            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="2" aria-label="Filtrar por e-mail" autocomplete="off" /></label></td>
+            <td><label class="grid-filter-cell"><partial name="_Icone" model='"lista"' /><input type="search" data-grid-filter="3" aria-label="Filtrar por perfil" autocomplete="off" /></label></td>
+            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"igual"' /><input type="search" data-grid-filter="4" aria-label="Filtrar por quantidade de menus" autocomplete="off" /></label></td>
+            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"igual"' /><input type="search" data-grid-filter="5" aria-label="Filtrar por data de criação" autocomplete="off" /></label></td>
+            @if (Model.IsAdmin)
+            {
+              <td class="col-actions"></td>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var user in Model.Users)
+          {
+            var isSelf = user.Id == Model.CurrentUserId;
+            <tr data-grid-row>
+              <td><span class="cell-strong">@user.UserName</span>@if (isSelf) { <span class="cell-aside">você</span> }</td>
+              <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.FullName) ? "—" : user.FullName)</td>
+              <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.Email) ? "—" : user.Email)</td>
+              <td>
+                @if (user.IsAdmin)
+                {
+                  <span class="cell-accent">Administrador</span>
+                }
+                else
+                {
+                  <text>Usuário</text>
+                }
+              </td>
+              <td class="col-hide-sm">@(user.IsAdmin ? "Todos" : user.MenuCount.ToString())</td>
+              <td class="col-hide-sm">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+              @if (Model.IsAdmin)
+              {
+                <td class="col-actions">
+                  <span class="cell-actions">
+                    <a class="icon-button icon-button--edit" asp-page="Editar" asp-route-id="@user.Id" title="Editar" aria-label="Editar @user.UserName"><partial name="_Icone" model='"editar"' /></a>
+                    <a class="icon-button" asp-page="Senha" asp-route-id="@user.Id" title="Redefinir senha" aria-label="Redefinir a senha de @user.UserName"><partial name="_Icone" model='"senha"' /></a>
+                    @if (!isSelf)
+                    {
+                      <a class="icon-button icon-button--danger" asp-page="Excluir" asp-route-id="@user.Id" title="Excluir" aria-label="Excluir @user.UserName"><partial name="_Icone" model='"excluir"' /></a>
+                    }
+                  </span>
+                </td>
+              }
+            </tr>
+          }
+          <tr class="grid-empty" data-grid-empty hidden="@(total > 0)">
+            <td colspan="@(Model.IsAdmin ? 7 : 6)">Nenhum usuário encontrado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-foot">
+      <span data-grid-summary>@(total == 0 ? "Nenhum registro encontrado" : $"Exibindo 1–{total} de {total} registros")</span>
+      <nav class="pager" data-grid-pager aria-label="Paginação" hidden></nav>
+    </div>
   </div>
-}
+</section>

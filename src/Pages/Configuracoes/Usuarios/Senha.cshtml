@@ -4,30 +4,39 @@
     ViewData["Title"] = "Redefinir senha";
 }
 
-<div class="page-header">
-  <div class="page-crumb">Configurações · Usuários</div>
-  <h1>Redefinir senha</h1>
-</div>
+<header class="page-head">
+  <a class="page-back" asp-page="Index" title="Voltar" aria-label="Voltar para a lista de usuários"><partial name="_Icone" model='"voltar"' /></a>
+  <h1 class="page-title">Redefinir senha</h1>
+  <div class="page-actions">
+    <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
+    <button type="submit" class="btn btn-primary" form="form-senha">Salvar</button>
+  </div>
+</header>
 
-<form method="post" class="card form">
-  <p class="card-text">Nova senha para <strong>@Model.UserName</strong>. As sessões que ele já tiver abertas continuam valendo até expirar.</p>
-
+<form id="form-senha" method="post" class="crud-form">
   <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
 
-  <div class="field">
-    <label asp-for="Input.NewPassword">Nova senha</label>
-    <input asp-for="Input.NewPassword" type="password" autocomplete="new-password" autofocus />
-    <span asp-validation-for="Input.NewPassword" class="field-error"></span>
-  </div>
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Nova senha de @Model.UserName</h2>
+    </div>
 
-  <div class="field">
-    <label asp-for="Input.ConfirmNewPassword">Confirmar nova senha</label>
-    <input asp-for="Input.ConfirmNewPassword" type="password" autocomplete="new-password" />
-    <span asp-validation-for="Input.ConfirmNewPassword" class="field-error"></span>
-  </div>
+    <div class="section-body">
+      <p class="section-text section-text--muted">As sessões que ele já tiver abertas continuam valendo até expirar.</p>
 
-  <div class="form-actions">
-    <button type="submit" class="btn btn-primary">Redefinir senha</button>
-    <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
-  </div>
+      <div class="field-grid">
+        <div class="field col-4">
+          <label asp-for="Input.NewPassword">Nova senha *</label>
+          <input asp-for="Input.NewPassword" type="password" autocomplete="new-password" autofocus />
+          <span asp-validation-for="Input.NewPassword" class="field-error"></span>
+        </div>
+
+        <div class="field col-4">
+          <label asp-for="Input.ConfirmNewPassword">Confirmar nova senha *</label>
+          <input asp-for="Input.ConfirmNewPassword" type="password" autocomplete="new-password" />
+          <span asp-validation-for="Input.ConfirmNewPassword" class="field-error"></span>
+        </div>
+      </div>
+    </div>
+  </section>
 </form>

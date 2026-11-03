@@ -98,6 +98,9 @@ public abstract class UsuarioFormPageModel(
 
     public abstract bool IsEdit { get; }
 
+    /// <summary>Usuário em edição (só no Editar); o formulário usa para oferecer o atalho de redefinir a senha.</summary>
+    public Guid? EditingUserId { get; protected set; }
+
     protected async Task LoadMenusAsync(CancellationToken cancellationToken)
         => AvailableMenus = await assignableMenus.HandleAsync(new ListAssignableMenusQuery(), cancellationToken);
 }

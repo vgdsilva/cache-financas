@@ -16,8 +16,6 @@ public class EditarModel(
 {
     public override bool IsEdit => true;
 
-    public Guid UserId { get; private set; }
-
     public async Task<IActionResult> OnGetAsync(Guid id, CancellationToken cancellationToken)
     {
         if (!await LoadIsAdminAsync(cancellationToken))
@@ -32,8 +30,8 @@ public class EditarModel(
             return NotFound();
         }
 
-        UserId = user.Id;
-        Input = new UserInput { UserName = user.UserName, Email = user.Email, FullName = user.FullName, IsAdmin = user.IsAdmin, MenuCodes = [.. user.MenuCodes] };
+        EditingUserId = user.Id;
+        Input =new UserInput { UserName = user.UserName, Email = user.Email, FullName = user.FullName, IsAdmin = user.IsAdmin, MenuCodes = [.. user.MenuCodes] };
         await LoadMenusAsync(cancellationToken);
 
         return Page();
@@ -46,7 +44,7 @@ public class EditarModel(
             return ToAccessDenied();
         }
 
-        UserId = id;
+        EditingUserId = id;
         await LoadMenusAsync(cancellationToken);
 
         if (!ModelState.IsValid)

@@ -11,14 +11,12 @@ public class IndexModel(
     IQueryHandler<GetUserProfileQuery, UserProfile?> profile,
     IQueryHandler<ListUsersQuery, IReadOnlyList<UserListItem>> list) : UsuariosPageModel(profile)
 {
-    [BindProperty(Name = "q", SupportsGet = true)]
-    public string? Search { get; set; }
-
     public IReadOnlyList<UserListItem> Users { get; private set; } = [];
 
+    /// <summary>Traz todos os usuários; os filtros por coluna e a paginação da tabela rodam no navegador (site.js).</summary>
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
         await LoadIsAdminAsync(cancellationToken);
-        Users = await list.HandleAsync(new ListUsersQuery(Search), cancellationToken);
+        Users = await list.HandleAsync(new ListUsersQuery(), cancellationToken);
     }
 }
