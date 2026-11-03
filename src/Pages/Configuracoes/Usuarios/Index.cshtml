@@ -8,6 +8,7 @@
   <div>
     <div class="page-crumb">Configurações</div>
     <h1>Usuários</h1>
+    <p class="page-sub">@(Model.Users.Count == 1 ? "1 usuário" : $"{Model.Users.Count} usuários")@(string.IsNullOrWhiteSpace(Model.Search) ? " cadastrados" : " encontrados")</p>
   </div>
   @if (Model.IsAdmin)
   {
@@ -38,6 +39,7 @@ else
       <thead>
         <tr>
           <th>Usuário</th>
+          <th class="col-hide-sm">E-mail</th>
           <th>Perfil</th>
           <th class="col-hide-sm">Menus</th>
           <th class="col-hide-sm">Criado em</th>
@@ -54,14 +56,14 @@ else
           <tr>
             <td>
               <div class="cell-user">
-                <span class="avatar" aria-hidden="true">@user.UserName[..1].ToUpperInvariant()</span>
-                <span class="cell-user-name">@user.UserName</span>
-                @if (isSelf)
-                {
-                  <span class="badge">você</span>
-                }
+                <span class="avatar" aria-hidden="true">@user.DisplayName[..1].ToUpperInvariant()</span>
+                <div class="cell-user-text">
+                  <span class="cell-user-name">@user.DisplayName @if (isSelf) { <span class="badge">você</span> }</span>
+                  <span class="cell-user-sub">@user.UserName</span>
+                </div>
               </div>
             </td>
+            <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.Email) ? "—" : user.Email)</td>
             <td>
               @if (user.IsAdmin)
               {

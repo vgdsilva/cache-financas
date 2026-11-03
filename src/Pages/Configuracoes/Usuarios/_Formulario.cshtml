@@ -1,56 +1,91 @@
 @* Campos compartilhados por Criar e Editar. Model = a própria página (UsuarioFormPageModel). *@
 @model UsuarioFormPageModel
+@{
+    var total = Model.AvailableMenus.Count;
+    var marked = Model.AvailableMenus.Count(m => Model.Input.MenuCodes.Contains(m.Code));
+}
 
 <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
 
-<div class="field">
-  <label asp-for="Input.UserName">Usuário</label>
-  <input asp-for="Input.UserName" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus />
-  <span asp-validation-for="Input.UserName" class="field-error"></span>
+<div class="form-grid">
+  <div class="field">
+    <label asp-for="Input.UserName">Usuário *</label>
+    <input asp-for="Input.UserName" placeholder="nome.sobrenome" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus />
+    <p class="field-hint">É como ele entra no sistema. Letras, dígitos, ponto, hífen e underscore (3 a 40 caracteres).</p>
+    <span asp-validation-for="Input.UserName" class="field-error"></span>
+  </div>
+
+  <div class="field">
+    <label asp-for="Input.Email">E-mail *</label>
+    <input asp-for="Input.Email" type="email" placeholder="nome@empresa.com" autocomplete="off" autocapitalize="none" spellcheck="false" />
+    <span asp-validation-for="Input.Email" class="field-error"></span>
+  </div>
+
+  <div class="field field--full">
+    <label asp-for="Input.FullName">Nome completo</label>
+    <input asp-for="Input.FullName" placeholder="Nome e sobrenome" autocomplete="off" />
+    <p class="field-hint">Aparece no cabeçalho e nas listas, no lugar do usuário (opcional).</p>
+    <span asp-validation-for="Input.FullName" class="field-error"></span>
+  </div>
+
+  @if (!Model.IsEdit)
+  {
+    <div class="field">
+      <label asp-for="Input.Password">Senha *</label>
+      <input asp-for="Input.Password" type="password" autocomplete="new-password" />
+      <span asp-validation-for="Input.Password" class="field-error"></span>
+    </div>
+
+    <div class="field">
+      <label asp-for="Input.ConfirmPassword">Confirmar senha *</label>
+      <input asp-for="Input.ConfirmPassword" type="password" autocomplete="new-password" />
+      <span asp-validation-for="Input.ConfirmPassword" class="field-error"></span>
+    </div>
+  }
 </div>
 
-@if (!Model.IsEdit)
-{
-  <div class="field">
-    <label asp-for="Input.Password">Senha</label>
-    <input asp-for="Input.Password" type="password" autocomplete="new-password" />
-    <span asp-validation-for="Input.Password" class="field-error"></span>
-  </div>
-
-  <div class="field">
-    <label asp-for="Input.ConfirmPassword">Confirmar senha</label>
-    <input asp-for="Input.ConfirmPassword" type="password" autocomplete="new-password" />
-    <span asp-validation-for="Input.ConfirmPassword" class="field-error"></span>
-  </div>
-}
-
-<label class="check">
-  <input type="checkbox" asp-for="Input.IsAdmin" data-admin-toggle />
-  <span>
-    Administrador
-    <small>Acessa todos os menus e gerencia usuários.</small>
+<label class="switch-card">
+  <input type="checkbox" role="switch" asp-for="Input.IsAdmin" data-admin-toggle />
+  <span class="switch-track" aria-hidden="true"></span>
+  <span class="switch-text">
+    <span class="switch-title">Administrador</span>
+    <span class="switch-desc">Acesso total a todos os menus do sistema.</span>
   </span>
 </label>
 
-<fieldset class="menus" data-menus disabled="@Model.Input.IsAdmin">
-  <legend>Menus liberados</legend>
-  <p class="menus-hint">Quais telas este usuário pode abrir. Administrador acessa todas, então a escolha não se aplica.</p>
+<fieldset class="menus-block" data-menus disabled="@Model.Input.IsAdmin">
+  <legend class="sr-only">Menus de Acesso</legend>
 
-  @foreach (var group in Model.AvailableMenus.GroupBy(m => m.Group))
-  {
-    <div class="menus-group">
-      <p class="menus-group-title">@group.Key</p>
-      <div class="menus-options">
-        @foreach (var menu in group)
-        {
-          <label class="check">
-            <input type="checkbox" name="Input.MenuCodes" value="@menu.Code" checked="@Model.Input.MenuCodes.Contains(menu.Code)" />
-            <span>@menu.Description</span>
-          </label>
-        }
-      </div>
+  <div class="menus-head">
+    <span class="label-caps">Menus de Acesso <span data-menus-count>(@marked/@total)</span></span>
+    <div class="menus-bulk">
+      <button type="button" class="link-btn" data-menus-all hidden>Marcar tudo</button>
+      <button type="button" class="link-btn link-btn--muted" data-menus-none hidden>Limpar</button>
     </div>
-  }
+  </div>
+
+  <div class="menus-grid">
+    @foreach (var group in Model.AvailableMenus.GroupBy(m => m.Group))
+    {
+      <div class="menus-card" data-menus-group>
+        <div class="menus-card-head">
+          <span class="menus-card-title">@group.Key</span>
+          <button type="button" class="link-btn" data-group-toggle hidden>Marcar</button>
+        </div>
+        <ul class="menus-list">
+          @foreach (var menu in group)
+          {
+            <li>
+              <label class="check-line">
+                <input type="checkbox" name="Input.MenuCodes" value="@menu.Code" checked="@Model.Input.MenuCodes.Contains(menu.Code)" data-menu-item />
+                <span>@menu.Description</span>
+              </label>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
 </fieldset>
 
 <div class="form-actions">

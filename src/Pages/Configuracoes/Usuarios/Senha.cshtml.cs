@@ -31,6 +31,9 @@ public class SenhaModel(
 
     public string UserName { get; private set; } = string.Empty;
 
+    /// <summary>O handler chama o campo de "Password"; nesta tela ele é o <c>NewPassword</c>.</summary>
+    protected override string FieldKey(string field) => field == "Password" ? "Input.NewPassword" : base.FieldKey(field);
+
     public async Task<IActionResult> OnGetAsync(Guid id, CancellationToken cancellationToken)
     {
         if (!await LoadIsAdminAsync(cancellationToken))

@@ -133,6 +133,53 @@
     sync();
   });
 
+  // ---- Menus de Acesso: marcar/limpar tudo, marcar/desmarcar por grupo e contagem (aprimoramento; sem JS os checkboxes seguem funcionando) ----
+  document.querySelectorAll("[data-menus]").forEach((block) => {
+    const items = () => [...block.querySelectorAll("[data-menu-item]")];
+    const groups = [...block.querySelectorAll("[data-menus-group]")];
+    const count = block.querySelector("[data-menus-count]");
+    const allBtn = block.querySelector("[data-menus-all]");
+    const noneBtn = block.querySelector("[data-menus-none]");
+
+    const refresh = () => {
+      const all = items();
+      const marked = all.filter((i) => i.checked).length;
+      if (count) count.textContent = `(${marked}/${all.length})`;
+
+      groups.forEach((group) => {
+        const boxes = [...group.querySelectorAll("[data-menu-item]")];
+        const toggle = group.querySelector("[data-group-toggle]");
+        if (toggle) toggle.textContent = boxes.length > 0 && boxes.every((b) => b.checked) ? "Desmarcar" : "Marcar";
+      });
+    };
+
+    const setAll = (boxes, value) => {
+      boxes.forEach((b) => { b.checked = value; });
+      refresh();
+    };
+
+    [allBtn, noneBtn].forEach((b) => { if (b) b.hidden = false; });
+    allBtn?.addEventListener("click", () => setAll(items(), true));
+    noneBtn?.addEventListener("click", () => setAll(items(), false));
+
+    groups.forEach((group) => {
+      const toggle = group.querySelector("[data-group-toggle]");
+      if (!toggle) return;
+
+      toggle.hidden = false;
+      toggle.addEventListener("click", () => {
+        const boxes = [...group.querySelectorAll("[data-menu-item]")];
+        setAll(boxes, !boxes.every((b) => b.checked));
+      });
+    });
+
+    block.addEventListener("change", (event) => {
+      if (event.target instanceof HTMLInputElement && event.target.matches("[data-menu-item]")) refresh();
+    });
+
+    refresh();
+  });
+
   // ---- Login: mostrar/ocultar senha e estado de carregando ----
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
     const input = button.closest(".input-group")?.querySelector("input");

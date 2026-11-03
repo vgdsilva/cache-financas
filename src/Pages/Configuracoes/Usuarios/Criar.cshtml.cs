@@ -42,7 +42,7 @@ public class CriarModel(
         }
 
         var created = await TryRunAsync(() => register.HandleAsync(
-            new RegisterUserCommand(CurrentUserId, Input.UserName, Input.Password ?? string.Empty, Input.IsAdmin, Input.MenuCodes),
+            new RegisterUserCommand(CurrentUserId, Input.UserName, Input.Email, Input.FullName, Input.Password ?? string.Empty, Input.IsAdmin, Input.MenuCodes),
             cancellationToken));
 
         if (!created)

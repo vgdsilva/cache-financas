@@ -32,7 +32,13 @@ public abstract class UsuariosPageModel(IQueryHandler<GetUserProfileQuery, UserP
 
     protected IActionResult ToAccessDenied() => RedirectToPage("/AccessDenied");
 
-    /// <summary>Mensagem de regra de negócio vira erro de formulário; qualquer outra exceção segue como erro real.</summary>
+    /// <summary>Chave do <c>ModelState</c> do campo que o handler apontou no erro (cada página mapeia para os seus campos).</summary>
+    protected virtual string FieldKey(string field) => $"Input.{field}";
+
+    /// <summary>
+    /// Mensagem de regra de negócio vira erro de formulário (junto do campo, quando o handler indica qual);
+    /// qualquer outra exceção segue como erro real.
+    /// </summary>
     protected async Task<bool> TryRunAsync(Func<Task> action)
     {
         try
@@ -43,20 +49,29 @@ public abstract class UsuariosPageModel(IQueryHandler<GetUserProfileQuery, UserP
         }
         catch (BusinessRuleException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.AddModelError(ex.Field is null ? string.Empty : FieldKey(ex.Field), ex.Message);
 
             return false;
         }
     }
 }
 
-/// <summary>Campos do formulário de usuário (criar e editar).</summary>
+/// <summary>
+/// Campos do formulário de usuário (criar e editar). As regras de verdade (formato do login, e-mail, tamanhos)
+/// ficam nos handlers; aqui só o que o formulário precisa para chegar até eles.
+/// </summary>
 public class UserInput
 {
     [Display(Name = "Usuário")]
     [Required(ErrorMessage = "Informe o usuário.")]
-    [StringLength(50, ErrorMessage = "O usuário deve ter no máximo 50 caracteres.")]
     public string UserName { get; set; } = string.Empty;
+
+    [Display(Name = "E-mail")]
+    [Required(ErrorMessage = "Informe o e-mail.")]
+    public string Email { get; set; } = string.Empty;
+
+    [Display(Name = "Nome completo")]
+    public string? FullName { get; set; }
 
     /// <summary>Só usada ao criar. O tamanho mínimo é regra do handler.</summary>
     [DataType(DataType.Password)]

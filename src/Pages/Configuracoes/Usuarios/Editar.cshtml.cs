@@ -33,7 +33,7 @@ public class EditarModel(
         }
 
         UserId = user.Id;
-        Input = new UserInput { UserName = user.UserName, IsAdmin = user.IsAdmin, MenuCodes = [.. user.MenuCodes] };
+        Input = new UserInput { UserName = user.UserName, Email = user.Email, FullName = user.FullName, IsAdmin = user.IsAdmin, MenuCodes = [.. user.MenuCodes] };
         await LoadMenusAsync(cancellationToken);
 
         return Page();
@@ -55,7 +55,7 @@ public class EditarModel(
         }
 
         var saved = await TryRunAsync(() => update.HandleAsync(
-            new UpdateUserCommand(CurrentUserId, id, Input.UserName, Input.IsAdmin, Input.MenuCodes),
+            new UpdateUserCommand(CurrentUserId, id, Input.UserName, Input.Email, Input.FullName, Input.IsAdmin, Input.MenuCodes),
             cancellationToken));
 
         if (!saved)
