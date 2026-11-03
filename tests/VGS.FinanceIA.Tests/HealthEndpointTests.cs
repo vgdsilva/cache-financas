@@ -1,16 +1,17 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net;
+using VGS.FinanceIA.Tests.Infrastructure;
 
 namespace VGS.FinanceIA.Tests;
 
-public class HealthEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public class HealthEndpointTests(TestWebApplicationFactory factory) : IClassFixture<TestWebApplicationFactory>
 {
     [Fact]
-    public async Task Health_ReturnsOk()
+    public async Task Health_ReturnsOk_WithoutAuthentication()
     {
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/health");
 
-        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }

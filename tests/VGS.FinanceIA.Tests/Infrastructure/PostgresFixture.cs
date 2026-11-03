@@ -22,6 +22,8 @@ public sealed class PostgresFixture : IAsyncLifetime
         await _container.StartAsync();
 
         await using var db = CreateDbContext();
+
+        // Aplica as migrations de verdade: o teste exercita o mesmo caminho do deploy.
         await db.Database.MigrateAsync();
     }
 
