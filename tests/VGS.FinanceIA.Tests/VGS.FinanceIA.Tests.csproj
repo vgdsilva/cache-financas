@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VGS.FinanceIA.csproj" />
+    <ProjectReference Include="..\..\src\CacheFinancas.csproj" />
   </ItemGroup>
 
 </Project>
