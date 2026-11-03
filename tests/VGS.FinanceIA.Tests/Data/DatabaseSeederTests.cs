@@ -147,6 +147,7 @@ public class DatabaseSeederTests(PostgresFixture postgres) : IClassFixture<Postg
         {
             ["Seed:AdminUserName"] = TestHandlers.UniqueUserName(),
             ["Seed:AdminPassword"] = TestHandlers.ValidPassword,
+            ["Seed:AdminEmail"] = TestHandlers.TestEmail,
         }).Build();
 
         await TestHandlers.Seeder(db, settings).SeedAsync();

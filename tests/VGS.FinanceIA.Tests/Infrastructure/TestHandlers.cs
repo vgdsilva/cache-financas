@@ -14,6 +14,8 @@ public static class TestHandlers
 {
     public const string ValidPassword = "senha-segura-1";
 
+    public const string TestEmail = "teste@exemplo.com";
+
     public static string UniqueUserName() => "user-" + Guid.NewGuid().ToString("N");
 
     public static CreateUserHandler CreateUser(AppDbContext db, IConfiguration? configuration = null)
@@ -46,5 +48,5 @@ public static class TestHandlers
     }
 
     public static async Task<Guid> CreateUserAsync(AppDbContext db, bool isAdmin)
-        => await CreateUser(db).HandleAsync(new CreateUserCommand(UniqueUserName(), ValidPassword, isAdmin));
+        => await CreateUser(db).HandleAsync(new CreateUserCommand(UniqueUserName(), ValidPassword, isAdmin, TestEmail));
 }

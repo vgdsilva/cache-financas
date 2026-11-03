@@ -52,6 +52,7 @@ public class DatabaseInitializerTests(PostgresFixture postgres) : IClassFixture<
             ["Auth:MinPasswordLength"] = "3",
             ["Seed:AdminUserName"] = "admin",
             ["Seed:AdminPassword"] = "123",
+            ["Seed:AdminEmail"] = "admin@cachefinancas.local",
         });
 
         await RunInitializerAsync(provider);
@@ -77,6 +78,7 @@ public class DatabaseInitializerTests(PostgresFixture postgres) : IClassFixture<
             ["Auth:MinPasswordLength"] = "3",
             ["Seed:AdminUserName"] = "admin",
             ["Seed:AdminPassword"] = "123",
+            ["Seed:AdminEmail"] = "admin@cachefinancas.local",
         });
 
         await RunInitializerAsync(provider);
@@ -94,6 +96,7 @@ public class DatabaseInitializerTests(PostgresFixture postgres) : IClassFixture<
         {
             ["Seed:AdminUserName"] = "admin",
             ["Seed:AdminPassword"] = "123",
+            ["Seed:AdminEmail"] = "admin@cachefinancas.local",
         });
 
         await Assert.ThrowsAsync<BusinessRuleException>(() => RunInitializerAsync(provider));

@@ -38,13 +38,13 @@ public class PasswordLengthTests
     [InlineData("0", "")] // mínimo nunca fica abaixo de 1
     public async Task TooShortPassword_IsRejected(string? minLength, string password)
         => await Assert.ThrowsAsync<BusinessRuleException>(
-            () => Handler(minLength).HandleAsync(new CreateUserCommand("admin", password, IsAdmin: true)));
+            () => Handler(minLength).HandleAsync(new CreateUserCommand("admin", password, IsAdmin: true, Email: TestHandlers.TestEmail)));
 
     [Fact]
     public async Task DefaultMinimum_Is8()
     {
         var error = await Assert.ThrowsAsync<BusinessRuleException>(
-            () => Handler(null).HandleAsync(new CreateUserCommand("admin", "123", IsAdmin: true)));
+            () => Handler(null).HandleAsync(new CreateUserCommand("admin", "123", IsAdmin: true, Email: TestHandlers.TestEmail)));
 
         Assert.Contains("8", error.Message);
     }
@@ -85,7 +85,7 @@ public class UserHandlersTests(PostgresFixture postgres) : IClassFixture<Postgre
         var name = TestHandlers.UniqueUserName();
 
         var id = await TestHandlers.CreateUser(db)
-            .HandleAsync(new CreateUserCommand("  " + name.ToUpperInvariant() + " ", TestHandlers.ValidPassword, IsAdmin: false));
+            .HandleAsync(new CreateUserCommand("  " + name.ToUpperInvariant() + " ", TestHandlers.ValidPassword, IsAdmin: false, Email: TestHandlers.TestEmail));
 
         var user = await db.Users.SingleAsync(u => u.Id == id);
         Assert.Equal(name, user.UserName);
@@ -98,12 +98,12 @@ public class UserHandlersTests(PostgresFixture postgres) : IClassFixture<Postgre
         await using var db = postgres.CreateDbContext();
         var handler = TestHandlers.CreateUser(db);
         var name = TestHandlers.UniqueUserName();
-        await handler.HandleAsync(new CreateUserCommand(name, TestHandlers.ValidPassword, IsAdmin: false));
+        await handler.HandleAsync(new CreateUserCommand(name, TestHandlers.ValidPassword, IsAdmin: false, Email: TestHandlers.TestEmail));
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => handler.HandleAsync(new CreateUserCommand(name, "outra-senha-2", IsAdmin: false)));
+            () => handler.HandleAsync(new CreateUserCommand(name, "outra-senha-2", IsAdmin: false, Email: TestHandlers.TestEmail)));
         await Assert.ThrowsAsync<BusinessRuleException>(
-            () => handler.HandleAsync(new CreateUserCommand(TestHandlers.UniqueUserName(), "curta", IsAdmin: false)));
+            () => handler.HandleAsync(new CreateUserCommand(TestHandlers.UniqueUserName(), "curta", IsAdmin: false, Email: TestHandlers.TestEmail)));
     }
 
     [DockerFact]
@@ -111,7 +111,7 @@ public class UserHandlersTests(PostgresFixture postgres) : IClassFixture<Postgre
     {
         await using var db = postgres.CreateDbContext();
         var name = TestHandlers.UniqueUserName();
-        await TestHandlers.CreateUser(db).HandleAsync(new CreateUserCommand(name, TestHandlers.ValidPassword, IsAdmin: false));
+        await TestHandlers.CreateUser(db).HandleAsync(new CreateUserCommand(name, TestHandlers.ValidPassword, IsAdmin: false, Email: TestHandlers.TestEmail));
         var authenticate = TestHandlers.Authenticate(db);
 
         var ok = await authenticate.HandleAsync(new AuthenticateUserCommand(name.ToUpperInvariant(), TestHandlers.ValidPassword));
@@ -128,8 +128,8 @@ public class UserHandlersTests(PostgresFixture postgres) : IClassFixture<Postgre
         var ensure = TestHandlers.EnsureInitialAdmin(db);
 
         // Já existe usuário (de outros testes ou desta chamada): a segunda chamada nunca cria.
-        await ensure.HandleAsync(new EnsureInitialAdminCommand(TestHandlers.UniqueUserName(), TestHandlers.ValidPassword));
-        var created = await ensure.HandleAsync(new EnsureInitialAdminCommand(TestHandlers.UniqueUserName(), TestHandlers.ValidPassword));
+        await ensure.HandleAsync(new EnsureInitialAdminCommand(TestHandlers.UniqueUserName(), TestHandlers.ValidPassword, TestHandlers.TestEmail));
+        var created = await ensure.HandleAsync(new EnsureInitialAdminCommand(TestHandlers.UniqueUserName(), TestHandlers.ValidPassword, TestHandlers.TestEmail));
 
         Assert.False(created);
     }
