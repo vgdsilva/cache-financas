@@ -180,6 +180,80 @@
     refresh();
   });
 
+  // ---- Tabela (Data Grid): filtros por coluna e paginação no navegador (aprimoramento; sem JS a lista aparece inteira) ----
+  // Marcação: [data-grid] > tbody [data-grid-row], inputs [data-grid-filter="índice da coluna"], [data-grid-empty],
+  // [data-grid-summary] e [data-grid-pager]. O tamanho da página vem de data-page-size.
+  document.querySelectorAll("[data-grid]").forEach((grid) => {
+    const rows = [...grid.querySelectorAll("tbody [data-grid-row]")];
+    const filters = [...grid.querySelectorAll("[data-grid-filter]")];
+    const empty = grid.querySelector("[data-grid-empty]");
+    const summary = grid.querySelector("[data-grid-summary]");
+    const pager = grid.querySelector("[data-grid-pager]");
+    const pageSize = Number(grid.dataset.pageSize) || 10;
+    let page = 1;
+
+    // Sem acento e sem diferença de caixa: "joao" acha "João".
+    const fold = (text) => text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+    const pageButton = (label, target, { current = false, disabled = false, name = label } = {}) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.disabled = disabled;
+      button.setAttribute("aria-label", name);
+      if (current) button.setAttribute("aria-current", "page");
+      button.addEventListener("click", () => { page = target; render(); });
+      return button;
+    };
+
+    const renderPager = (pages) => {
+      if (!pager) return;
+
+      // Primeira, última e a vizinhança da atual; o que sobra entre elas vira reticências.
+      const numbers = [...new Set([1, page - 1, page, page + 1, pages])].filter((n) => n >= 1 && n <= pages).sort((a, b) => a - b);
+      const items = [pageButton("‹", page - 1, { disabled: page === 1, name: "Página anterior" })];
+
+      numbers.forEach((n, i) => {
+        if (i > 0 && n - numbers[i - 1] > 1) {
+          const gap = document.createElement("span");
+          gap.textContent = "…";
+          gap.setAttribute("aria-hidden", "true");
+          items.push(gap);
+        }
+        items.push(pageButton(String(n), n, { current: n === page, name: `Página ${n}` }));
+      });
+
+      items.push(pageButton("›", page + 1, { disabled: page === pages, name: "Próxima página" }));
+      pager.replaceChildren(...items);
+      pager.hidden = false;
+    };
+
+    const render = () => {
+      const terms = filters
+        .map((input) => ({ column: Number(input.dataset.gridFilter), value: fold(input.value) }))
+        .filter((term) => term.value);
+      const matches = rows.filter((row) => terms.every((term) => fold(row.cells[term.column]?.textContent ?? "").includes(term.value)));
+      const pages = Math.max(1, Math.ceil(matches.length / pageSize));
+      page = Math.min(page, pages);
+
+      const start = (page - 1) * pageSize;
+      const visible = new Set(matches.slice(start, start + pageSize));
+      rows.forEach((row) => { row.hidden = !visible.has(row); });
+
+      if (empty) empty.hidden = matches.length > 0;
+      if (summary) {
+        summary.textContent = matches.length === 0
+          ? "Nenhum registro encontrado"
+          : `Exibindo ${start + 1}–${start + visible.size} de ${matches.length} registros`;
+      }
+
+      renderPager(pages);
+    };
+
+    filters.forEach((input) => input.addEventListener("input", () => { page = 1; render(); }));
+    render();
+  });
+
   // ---- Login: mostrar/ocultar senha e estado de carregando ----
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
     const input = button.closest(".input-group")?.querySelector("input");
