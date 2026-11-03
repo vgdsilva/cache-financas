@@ -22,82 +22,245 @@ namespace VGS.FinanceIA.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("VGS.FinanceIA.Domain.AppSetting", b =>
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.Configuration", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
+
                     b.Property<string>("Key")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("key");
+
+                    b.Property<Guid?>("SystemDeleted")
+                        .HasColumnType("uuid")
+                        .HasColumnName("system_deleted");
+
+                    b.Property<DateTime?>("SystemDeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("system_deleted_at");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_at");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("userid");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text")
+                        .HasColumnName("value");
 
-                    b.HasKey("Key");
+                    b.HasKey("Id");
 
-                    b.ToTable("settings", (string)null);
+                    b.HasIndex("UserId");
 
-                    b.HasData(
-                        new
-                        {
-                            Key = "Ai:Model",
-                            Value = "claude-sonnet-5-5"
-                        });
+                    b.HasIndex("Key", "UserId", "SystemDeleted")
+                        .IsUnique();
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("Key", "UserId", "SystemDeleted"), false);
+
+                    b.ToTable("configuration");
                 });
 
-            modelBuilder.Entity("VGS.FinanceIA.Domain.AppUser", b =>
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.MenuItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<Guid?>("SystemDeleted")
+                        .HasColumnType("uuid")
+                        .HasColumnName("system_deleted");
+
+                    b.Property<DateTime?>("SystemDeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("system_deleted_at");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_at");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("text")
+                        .HasColumnName("url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Code", "SystemDeleted")
+                        .IsUnique();
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("Code", "SystemDeleted"), false);
+
+                    b.ToTable("menu_item");
+                });
+
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_admin");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
+
+                    b.Property<Guid?>("SystemDeleted")
+                        .HasColumnType("uuid")
+                        .HasColumnName("system_deleted");
+
+                    b.Property<DateTime?>("SystemDeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("system_deleted_at");
+
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_at");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text")
+                        .HasColumnName("user_name");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserName")
+                    b.HasIndex("UserName", "SystemDeleted")
                         .IsUnique();
 
-                    b.ToTable("users", (string)null);
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("UserName", "SystemDeleted"), false);
+
+                    b.ToTable("users");
                 });
 
-            modelBuilder.Entity("VGS.FinanceIA.Domain.TaskItem", b =>
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.UserMenuPermission", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
-                    b.Property<DateTimeOffset?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("menu_item_id");
 
-                    b.Property<DateOnly?>("DueDate")
-                        .HasColumnType("date");
+                    b.Property<Guid?>("SystemDeleted")
+                        .HasColumnType("uuid")
+                        .HasColumnName("system_deleted");
 
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("boolean");
+                    b.Property<DateTime?>("SystemDeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("system_deleted_at");
 
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                    b.Property<DateTime>("UpdateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_at");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDone", "DueDate");
+                    b.HasIndex("MenuItemId");
 
-                    b.ToTable("tasks", (string)null);
+                    b.HasIndex("UserId", "MenuItemId", "SystemDeleted")
+                        .IsUnique();
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("UserId", "MenuItemId", "SystemDeleted"), false);
+
+                    b.ToTable("user_menu_permission");
+                });
+
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.Configuration", b =>
+                {
+                    b.HasOne("VGS.FinanceIA.Data.Types.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.MenuItem", b =>
+                {
+                    b.HasOne("VGS.FinanceIA.Data.Types.MenuItem", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("VGS.FinanceIA.Data.Types.UserMenuPermission", b =>
+                {
+                    b.HasOne("VGS.FinanceIA.Data.Types.MenuItem", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VGS.FinanceIA.Data.Types.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
