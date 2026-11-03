@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>@ViewData["Title"] - VGS.FinanceIA</title>
-  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+  <partial name="_Head" />
 </head>
 <body>
-  <main role="main">
-    @RenderBody()
-  </main>
+  @if (User.Identity?.IsAuthenticated == true)
+  {
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
+    <div class="app-shell" data-app-shell>
+      @await Component.InvokeAsync("AppNav")
+      <main class="content" id="main">
+        <div class="content-inner">
+          @RenderBody()
+        </div>
+      </main>
+    </div>
+  }
+  else
+  {
+    <main class="content content--bare" id="main">
+      <div class="content-inner">
+        @RenderBody()
+      </div>
+    </main>
+  }
   @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
