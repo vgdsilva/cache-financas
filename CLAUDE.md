@@ -92,7 +92,12 @@ dotnet test          # testes de integração exigem Docker (Testcontainers); se
 - Administrador acessa todos os menus, então a escolha de menus só vale para usuário comum (fica desabilitada no formulário e é ignorada pelos handlers).
 - Só os menus que são páginas (com URL) são atribuíveis; `SetUserMenus` concede/revoga para ficar exatamente igual ao conjunto enviado e invalida o cache de permissões.
 - Erro de regra de negócio = `BusinessRuleException` (`Framework/Cqrs`), com mensagem para o usuário final. A UI captura **só** essa (via `TryRunAsync`) e mostra no formulário; qualquer outra exceção é bug e segue como erro. Mensagem de sucesso vai em `TempData["Success"]` (o `_Layout` exibe).
-- Sem coluna nova em `users` (usuário, hash, `IsAdmin`); não precisou de migration.
+- **Campos do usuário** (`users`): `UserName` (login), `Email`, `FullName`, `PasswordHash`, `IsAdmin`.
+  - **Usuário (login)**: só letras, dígitos, ponto, hífen e underscore, 3 a 40 caracteres; gravado em minúsculas; único entre os ativos.
+  - **E-mail**: obrigatório e com formato válido; gravado em minúsculas. Não é único (o login é o usuário). Usuários anteriores ao campo ficam com e-mail vazio até a próxima edição, que o exige.
+  - **Nome completo**: opcional (até 120); quando existe aparece no cabeçalho e nas listas no lugar do login (`DisplayName`).
+  - As regras de formato ficam em `Features/Users/UserRules`. Os handlers apontam o campo no `BusinessRuleException(message, field)` e a página mostra a mensagem junto do campo (`FieldKey`).
+- **Formulário**: campos em grade (usuário, e-mail, nome completo, senha ao criar), chave **Administrador** ("Acesso total a todos os menus do sistema") e bloco **Menus de Acesso** em cartões por grupo, com contagem `(marcados/total)` e botões Marcar tudo/Limpar/Marcar por grupo (JS, aprimoramento progressivo). A chave desabilita o bloco de menus.
 
 ## Layout e navegação
 
@@ -104,6 +109,7 @@ dotnet test          # testes de integração exigem Docker (Testcontainers); se
 - `_Layout` mostra o shell só para usuário autenticado; `_AuthLayout` é o da tela de login (formulário + painel de marca).
 - A sidebar é montada a partir de `GetAllowedMenusQuery`: menu **sem URL** é agrupador (título de seção) e os filhos liberados ficam abaixo; os demais vão na seção "Principal". O ícone vem do campo `Icon` do catálogo e é resolvido em `NavIcons` (nome desconhecido usa um ícone padrão; ícone novo = entrada em `NavIcons`).
 - **Tema claro/escuro/sistema**: as cores são tokens com `light-dark(claro, escuro)` em `:root` (uma paleta só, sem bloco duplicado). Padrão = segue o aparelho (`color-scheme: light dark`); a escolha do usuário (menu do usuário → Tema) vira `data-theme="light|dark"` no `<html>` e fica em `localStorage` (`theme`; "Sistema" remove a chave). O script inline de `_Head.cshtml` aplica isso antes da primeira pintura (precisa vir antes do CSS). Cor nova = token em `:root` com os dois valores; não use cor fixa nos componentes. Requer Safari 17.5+/Chrome 123+ (`light-dark()`).
+- **Páginas usam a largura inteira da tela**: sem `max-width` em página, formulário, tabela ou cartão (o conteúdo preenche o `<main>`). Só são aceitos limites que não são de largura de página: a gaveta do menu no mobile (`86vw`), o truncamento do nome no header e o cartão de login (tela centralizada própria).
 - Não use `section` como nome de variável em `.cshtml` (palavra reservada do Razor).
 
 ## Entidades e banco
@@ -122,5 +128,5 @@ dotnet test          # testes de integração exigem Docker (Testcontainers); se
 - A pergunta "quem acessa o quê" é respondida só por `HasMenuAccessQuery`. As permissões **não** vão no cookie (só id e nome): revogar vale na hora.
 - Toda página declara o menu que exige: `[RequireMenu(Menus.Transactions)]` no PageModel (cobre os handlers HTMX da página). Sem atributo, a página exige apenas usuário autenticado; `[AllowAnonymous]` só para Login, AccessDenied e Error.
 - Toda tool de IA declara o menu que exige (`RequiredMenu`); o `ToolRegistry` só oferece ao modelo as tools permitidas e revalida (com `HasMenuAccessQuery`) antes de executar.
-- Admin inicial: `Seed:AdminUserName` e `Seed:AdminPassword` (variáveis `Seed__AdminUserName` e `Seed__AdminPassword`), criado só se não houver usuários. Senha com 8+ caracteres por padrão; `Auth:MinPasswordLength` reduz o mínimo e **só deve ser usado em desenvolvimento** (o `appsettings.Development.json` usa `admin`/`123` com mínimo 3; nunca coloque isso em Production).
+- Admin inicial: `Seed:AdminUserName`, `Seed:AdminPassword` e `Seed:AdminEmail` (variáveis `Seed__AdminUserName`, `Seed__AdminPassword` e `Seed__AdminEmail`), criado só se não houver usuários. Senha com 8+ caracteres por padrão; `Auth:MinPasswordLength` reduz o mínimo e **só deve ser usado em desenvolvimento** (o `appsettings.Development.json` usa `admin`/`123`, e-mail `admin@cachefinancas.local`, com mínimo 3; nunca coloque isso em Production).
 - Na subida, o `DatabaseInitializer` aplica as **migrations pendentes** e depois roda o seeder. Desligue ambos com `Database:InitializeOnStartup=false` (aí o schema é aplicado por fora, com `dotnet ef database update`). Migration nova continua sendo gerada à mão (`migrations add`); o teste `Model_IsInSyncWithMigrations` avisa se esquecer.
