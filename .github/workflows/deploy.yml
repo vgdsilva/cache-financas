@@ -19,17 +19,15 @@ jobs:
 
       - name: Gerar deploy/.env a partir dos secrets
         env:
-          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           umask 077
           {
             echo "ASPNETCORE_ENVIRONMENT=Production"
-            echo "ConnectionStrings__Default=${DB_CONNECTION_STRING}"
-            echo "Database__MigrarNoStartup=true"
+            echo "POSTGRES_DB=cachefinancas"
+            echo "POSTGRES_USER=cachefinancas"
+            echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
           } > deploy/.env
-
-      - name: Garantir rede do banco
-        run: docker network inspect db-net >/dev/null
 
       - name: Build e up
         run: docker compose up -d --build --remove-orphans

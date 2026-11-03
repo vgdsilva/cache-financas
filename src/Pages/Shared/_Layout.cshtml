@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <partial name="_Head" />
+</head>
+<body>
+  @if (User.Identity?.IsAuthenticated == true)
+  {
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
+    <div class="app-shell" data-app-shell>
+      @await Component.InvokeAsync("AppNav")
+      <div class="app-col">
+        @await Component.InvokeAsync("AppHeader")
+        <main class="app-main" id="main">
+          @RenderBody()
+        </main>
+      </div>
+    </div>
+  }
+  else
+  {
+    <main class="content content--bare" id="main">
+      <div class="content-inner">
+        @RenderBody()
+      </div>
+    </main>
+  }
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

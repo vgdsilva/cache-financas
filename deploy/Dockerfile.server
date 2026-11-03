@@ -1,17 +1,24 @@
 # syntax=docker/dockerfile:1
 # Contexto de build: raiz do repositorio (ver deploy/docker-compose.yml)
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG DOTNET_TAG=11.0
+
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG} AS build
 WORKDIR /src
 
 # Restore em camada separada: so invalida quando o .csproj muda
-COPY src/server/CacheFinancas.Server.csproj ./
-RUN dotnet restore
+COPY src/FMS.Domain/FMS.Domain.csproj FMS.Domain/
+COPY src/FMS.Web.Api.Data/FMS.Web.Api.Data.csproj FMS.Web.Api.Data/
+COPY src/FMS.Web.Api/FMS.Web.Api.csproj FMS.Web.Api/
+RUN dotnet restore FMS.Web.Api/FMS.Web.Api.csproj
 
-COPY src/server/ ./
-RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
+COPY src/FMS.Domain/ FMS.Domain/
+COPY src/FMS.Web.Api.Data/ FMS.Web.Api.Data/
+COPY src/FMS.Web.Api/ FMS.Web.Api/
+RUN dotnet publish FMS.Web.Api/FMS.Web.Api.csproj \
+    -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_TAG}-alpine AS final
 WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://+:3333 \
@@ -21,4 +28,4 @@ COPY --from=build --chown=$APP_UID /app/publish .
 USER $APP_UID
 
 EXPOSE 3333
-ENTRYPOINT ["dotnet", "CacheFinancas.Server.dll"]
+ENTRYPOINT ["dotnet", "FMS.Web.Api.dll"]

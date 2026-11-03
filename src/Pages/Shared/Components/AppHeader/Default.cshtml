@@ -1,0 +1,59 @@
+@using VGS.FinanceIA.ViewComponents
+@model AppHeaderModel
+
+<header class="app-header">
+  <button type="button" class="icon-btn icon-btn--round menu-btn" data-nav-toggle aria-controls="app-menu" aria-expanded="false" aria-label="Abrir menu">
+    <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fill-rule="evenodd" d="M2.5 4.75A.75.75 0 013.25 4h13.5a.75.75 0 010 1.5H3.25a.75.75 0 01-.75-.75zM2.5 10a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H3.25A.75.75 0 012.5 10zm0 5.25a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H3.25a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+    </svg>
+  </button>
+
+  <div class="header-fill">
+    <span class="header-brand">CacheFinancas</span>
+  </div>
+
+  <div class="header-actions">
+    @if (Model.CanChat && Model.ChatUrl is not null)
+    {
+      <a class="icon-btn icon-btn--round" href="@Model.ChatUrl" title="Cacau IA" aria-label="Cacau IA">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.84 8.84 0 01-2.83-.46L3 18l1.3-3.06A6.4 6.4 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm4 0H9v2h2V9zm2 0h2v2h-2V9z" clip-rule="evenodd" />
+        </svg>
+      </a>
+    }
+
+    <div class="user-menu" data-user-menu>
+      <button type="button" class="user-btn" data-user-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="user-dropdown">
+        <span class="avatar" aria-hidden="true">@Model.Initial</span>
+        <span class="user-meta">
+          <span class="user-name">@Model.UserName</span>
+          <span class="user-role">@Model.RoleLabel</span>
+        </span>
+        <svg class="user-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.3 7.3a1 1 0 011.4 0L10 10.6l3.3-3.3a1 1 0 111.4 1.4l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 010-1.4z" clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <div class="user-dropdown" id="user-dropdown" role="menu" hidden>
+        <div class="user-dropdown-head">
+          <span class="user-name">@Model.UserName</span>
+          <span class="user-role">@Model.RoleLabel</span>
+        </div>
+        <div class="theme-picker">
+          <span class="theme-picker-label" id="theme-label">Tema</span>
+          <div class="segmented" role="group" aria-labelledby="theme-label">
+            <button type="button" data-theme-option="light" aria-pressed="false">Claro</button>
+            <button type="button" data-theme-option="dark" aria-pressed="false">Escuro</button>
+            <button type="button" data-theme-option="system" aria-pressed="true">Sistema</button>
+          </div>
+        </div>
+        <form method="post" asp-page="/Logout">
+          <button type="submit" class="dropdown-item" role="menuitem">
+            @NavIcons.Render("logout")
+            <span>Sair</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>

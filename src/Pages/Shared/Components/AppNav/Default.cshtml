@@ -1,0 +1,46 @@
+@using VGS.FinanceIA.ViewComponents
+@model AppNavModel
+
+<div class="nav-backdrop" data-nav-backdrop></div>
+
+<aside class="sidebar" id="app-menu">
+  <div class="sidebar-head">
+    <a class="brand" href="/" title="Ir para a página inicial" aria-label="Ir para a página inicial">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span class="brand-name">CacheFinancas</span>
+    </a>
+    <div class="sidebar-head-actions">
+      <button type="button" class="icon-btn icon-btn--sm collapse-btn" data-nav-collapse aria-expanded="true" title="Recolher menu" aria-label="Recolher menu">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M12.7 4.3a1 1 0 010 1.4L8.4 10l4.3 4.3a1 1 0 11-1.4 1.4l-5-5a1 1 0 010-1.4l5-5a1 1 0 011.4 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button type="button" class="icon-btn icon-btn--sm close-btn" data-nav-close title="Fechar menu" aria-label="Fechar menu">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="nav" aria-label="Navegação principal">
+    @foreach (var group in Model.Sections)
+    {
+      <div class="nav-section">
+        <div class="nav-section-title">@group.Title</div>
+        <ul class="nav-list">
+          @foreach (var item in group.Items)
+          {
+            var current = Context.Request.Path.StartsWithSegments(item.Url);
+            <li>
+              <a class="nav-link" href="@item.Url" title="@item.Description" aria-current="@(current ? "page" : null)">
+                @NavIcons.Render(item.Icon)
+                <span class="nav-label">@item.Description</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </nav>
+</aside>
