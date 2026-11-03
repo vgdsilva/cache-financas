@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using VGS.FinanceIA.Data.Catalog;
 using VGS.FinanceIA.Features.Permissions;
 using VGS.FinanceIA.Framework.Authorization;
 using VGS.FinanceIA.Framework.Cqrs;
@@ -16,7 +17,7 @@ public sealed record AppNavModel(IReadOnlyList<NavSection> Sections);
 public class AppNavViewComponent(IQueryHandler<GetAllowedMenusQuery, IReadOnlyList<MenuEntry>> allowedMenus) : ViewComponent
 {
     /// <summary>Título da seção com os menus de primeiro nível (os que não estão dentro de um agrupador).</summary>
-    public const string MainSectionTitle = "Principal";
+    public const string MainSectionTitle = Menus.MainSectionTitle;
 
     public async Task<IViewComponentResult> InvokeAsync()
     {

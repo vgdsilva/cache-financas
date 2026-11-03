@@ -18,6 +18,9 @@ public sealed record MenuDefinition(string Code, string Description, string? Par
 /// </summary>
 public static class Menus
 {
+    /// <summary>Título da seção da sidebar com os menus de primeiro nível (os que não estão dentro de um agrupador).</summary>
+    public const string MainSectionTitle = "Principal";
+
     // Principal
     public const string Dashboard = "DASHBOARD";
     public const string Wallet = "WALLET";
