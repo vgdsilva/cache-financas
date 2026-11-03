@@ -1,9 +1,9 @@
-# VGS.FinanceIA
+# CacheFinancas
 
 App pessoal (uso individual) em .NET 10 / ASP.NET Core Razor Pages + HTMX, rodando em homeserver (Docker) e usado no iPhone como PWA.
 Dois modos com as MESMAS regras de negócio: telas de CRUD (operacional) e chat em linguagem natural (IA via tool use).
 
-Idioma: comentários, README e respostas em pt-BR. Código, nomes de classes e commits em inglês.
+Idioma: comentários, README e respostas em pt-BR. Código, nomes de classes e commits em inglês, **exceto as páginas** (`Pages/`): pastas e arquivos `.cshtml` em pt-BR, sem acento (ver "Rotas das páginas").
 
 ## Regra de ouro
 
@@ -28,7 +28,7 @@ public sealed class GrantMenuAccessHandler(...) : ICommandHandler<GrantMenuAcces
 ## Estrutura
 
 ```
-src/                        # UM único projeto web (VGS.FinanceIA.csproj fica direto aqui)
+src/                        # UM único projeto web (CacheFinancas.csproj fica direto aqui)
   Program.cs                # enxuto: só chama os métodos de extensão do Framework
   Framework/                # tudo que é configuração/infra do ASP.NET (nenhuma regra de negócio)
     Authentication/         #   cookie auth (inclui redirect amigável para HTMX)
@@ -73,12 +73,26 @@ dotnet tool run dotnet-ef database update --project src                         
 dotnet test          # testes de integração exigem Docker (Testcontainers); sem Docker aparecem como "Ignorado"
 ```
 
+## Rotas das páginas
+
+**A URL da página é o caminho do menu**, em pt-BR e minúsculo. A hierarquia do catálogo de menus vira a hierarquia da URL: Usuários é filho de Configurações, então vive em `/configuracoes/usuarios`. Menus de primeiro nível: `/dashboard`, `/minha-carteira`, `/cacau-ia`. Grupo Cadastros: `/cadastros/contas`, `/cadastros/lancamentos`, `/cadastros/categorias`. Grupo Configurações: `/configuracoes/usuarios`.
+
+- Ações da tela ficam **abaixo** da URL do menu, com nome em inglês: `/<menu>/create`, `/<menu>/edit/{id:guid}`, `/<menu>/delete/{id:guid}` e `/<menu>/<ação>` para as demais. A listagem é a própria URL do menu.
+- **Páginas em pt-BR**: pasta e arquivo seguem o menu, sem acento (`Pages/Configuracoes/Usuarios/Index.cshtml`, `Pages/Cadastros/Contas/Index.cshtml`, `Pages/MinhaCarteira/`, `Pages/CacauIA/`). Páginas de ação também (`Criar.cshtml`, `Editar.cshtml`, `Excluir.cshtml`), mas a **rota** da ação continua em inglês (`/create`, `/edit/{id}`, `/delete/{id}`). Todo o resto do C# (handlers, entidades, classes) segue em inglês. Rota explícita na diretiva: `@page "/configuracoes/usuarios"`, `@page "/configuracoes/usuarios/edit/{id:guid}"`. Não dependa do nome da pasta para formar a URL.
+- A URL do menu fica em `Data/Catalog/Menus.cs` e é a fonte da verdade; o seeder regrava a URL dos menus existentes na subida. Menu sem URL é só agrupador (título de seção na sidebar).
+- Toda página sob a URL de um menu declara `[RequireMenu(Menus.X)]` desse mesmo menu, e toda página que exige um menu vive sob a URL dele. Os testes `Menus_*` e `PageRoutesTests` garantem isso.
+- Fora dessa regra (não são menu): `/Login`, `/Logout`, `/AccessDenied`, `/Error`, `/health`.
+
 ## Layout e navegação
 
-- CSS e JS próprios (`wwwroot/css/site.css`, `wwwroot/js/site.js`), sem Bootstrap/Tailwind e sem Node. Cores e medidas são variáveis em `:root` (claro/escuro por `prefers-color-scheme`).
-- Mobile (< 992px): topbar com hambúrguer; o menu **desce** abaixo dela (estilo navbar do Bootstrap). Desktop: sidebar fixa, recolhível só com ícones (estado em `localStorage`, aplicado no `<head>` para não piscar).
+- CSS e JS próprios (`wwwroot/css/site.css`, `wwwroot/js/site.js`), sem Bootstrap/Tailwind e sem Node. Cores e medidas são variáveis em `:root`.
+- **O shell logado reproduz o layout de referência** (app Next/Tailwind do trabalho): sidebar de 18rem com cabeçalho (marca + recolher/fechar), seções com título em caixa-alta de 10px, item ativo preenchido com a cor da marca; header de 3.5rem com hambúrguer (só mobile), atalho do chat e menu do usuário (avatar, nome, perfil, dropdown com Sair); conteúdo rola dentro de `<main>`. Medidas e cinzas são as do Tailwind; o breakpoint é o `md` (768px).
+- Mobile (< 768px): a sidebar é uma **gaveta** que desliza da esquerda (hambúrguer no header, X no cabeçalho da sidebar, fundo escurecido, Esc fecha). Desktop (≥ 768px): sidebar fixa, recolhível só com ícones (estado em `localStorage`, aplicado no `<head>` para não piscar).
+- Sidebar = `AppNav` (menus liberados); header = `AppHeader` (perfil via `GetUserProfileQuery`, só exibição). Toda seção tem título: menus de primeiro nível ficam em "Principal".
+- Não temos as abas de domínio nem o sino de notificações da referência (não há o que mostrar); entram quando houver conteúdo real.
 - `_Layout` mostra o shell só para usuário autenticado; `_AuthLayout` é o da tela de login (formulário + painel de marca).
-- A sidebar é montada a partir de `GetAllowedMenusQuery`: menu **sem URL** é agrupador (título de seção) e os filhos liberados ficam abaixo; os demais vão na seção do topo. O ícone vem do campo `Icon` do catálogo e é resolvido em `NavIcons` (nome desconhecido usa um ícone padrão; ícone novo = entrada em `NavIcons`).
+- A sidebar é montada a partir de `GetAllowedMenusQuery`: menu **sem URL** é agrupador (título de seção) e os filhos liberados ficam abaixo; os demais vão na seção "Principal". O ícone vem do campo `Icon` do catálogo e é resolvido em `NavIcons` (nome desconhecido usa um ícone padrão; ícone novo = entrada em `NavIcons`).
+- **Tema claro/escuro/sistema**: as cores são tokens com `light-dark(claro, escuro)` em `:root` (uma paleta só, sem bloco duplicado). Padrão = segue o aparelho (`color-scheme: light dark`); a escolha do usuário (menu do usuário → Tema) vira `data-theme="light|dark"` no `<html>` e fica em `localStorage` (`theme`; "Sistema" remove a chave). O script inline de `_Head.cshtml` aplica isso antes da primeira pintura (precisa vir antes do CSS). Cor nova = token em `:root` com os dois valores; não use cor fixa nos componentes. Requer Safari 17.5+/Chrome 123+ (`light-dark()`).
 - Não use `section` como nome de variável em `.cshtml` (palavra reservada do Razor).
 
 ## Entidades e banco
@@ -93,7 +107,7 @@ dotnet test          # testes de integração exigem Docker (Testcontainers); se
 ## Autorização por menu
 
 - Acesso é por **menu** (sim/não), atribuído **direto ao usuário** (`UserMenuPermission`). `User.IsAdmin` acessa todos os menus ativos.
-- O catálogo de menus fica em `Data/Catalog/Menus.cs` (códigos estáveis, ex.: `FIN.TRANSACTIONS`). Menu novo = constante + definição lá (pais antes dos filhos); o `DatabaseSeeder` cria a linha na próxima inicialização.
+- O catálogo de menus fica em `Data/Catalog/Menus.cs` (códigos estáveis, ex.: `REG.TRANSACTIONS`, filho do grupo `REG`). Menu novo = constante + definição lá (pais antes dos filhos); o `DatabaseSeeder` cria a linha na próxima inicialização, acompanha texto/ícone/URL/ordem/pai dos existentes e **desativa** (sem apagar) o que saiu do catálogo. Estrutura atual: Principal (Dashboard, Minha Carteira, Cacau IA = chat), Cadastros (Contas, Lançamentos, Categorias), Configurações (Usuários).
 - A pergunta "quem acessa o quê" é respondida só por `HasMenuAccessQuery`. As permissões **não** vão no cookie (só id e nome): revogar vale na hora.
 - Toda página declara o menu que exige: `[RequireMenu(Menus.Transactions)]` no PageModel (cobre os handlers HTMX da página). Sem atributo, a página exige apenas usuário autenticado; `[AllowAnonymous]` só para Login, AccessDenied e Error.
 - Toda tool de IA declara o menu que exige (`RequiredMenu`); o `ToolRegistry` só oferece ao modelo as tools permitidas e revalida (com `HasMenuAccessQuery`) antes de executar.
