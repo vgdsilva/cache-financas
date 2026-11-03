@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VGS.FinanceIA.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VGS.FinanceIA.Tests/VGS.FinanceIA.Tests.csproj" />
+  </Folder>
+</Solution>
