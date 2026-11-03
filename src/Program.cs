@@ -1,6 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using VGS.FinanceIA.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
