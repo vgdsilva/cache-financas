@@ -1,28 +1,24 @@
-using Microsoft.EntityFrameworkCore;
-using VGS.FinanceIA.Data;
+using VGS.FinanceIA.Framework.Authentication;
+using VGS.FinanceIA.Framework.Authorization;
+using VGS.FinanceIA.Framework.Cqrs;
+using VGS.FinanceIA.Framework.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddHealthChecks();
+
+builder.Services.AddFrameworkDatabase(builder.Configuration);
+builder.Services.AddFrameworkAuthentication();
+builder.Services.AddFrameworkAuthorization();
+
+// Handlers de Command/Query das Features (PageModel e IA só chamam estes).
+builder.Services.AddHandlers(typeof(Program).Assembly);
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-}
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapStaticAssets();
-app.MapHealthChecks("/health");
-app.MapRazorPages()
-   .WithStaticAssets();
+app.UseFramework();
+app.MapFramework();
 
 app.Run();
 
