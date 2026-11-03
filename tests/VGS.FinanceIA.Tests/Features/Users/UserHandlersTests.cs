@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using VGS.FinanceIA.Features.Users;
+using VGS.FinanceIA.Framework.Cqrs;
 using VGS.FinanceIA.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,13 +37,13 @@ public class PasswordLengthTests
     [InlineData("3", "12")]
     [InlineData("0", "")] // mínimo nunca fica abaixo de 1
     public async Task TooShortPassword_IsRejected(string? minLength, string password)
-        => await Assert.ThrowsAsync<ArgumentException>(
+        => await Assert.ThrowsAsync<BusinessRuleException>(
             () => Handler(minLength).HandleAsync(new CreateUserCommand("admin", password, IsAdmin: true)));
 
     [Fact]
     public async Task DefaultMinimum_Is8()
     {
-        var error = await Assert.ThrowsAsync<ArgumentException>(
+        var error = await Assert.ThrowsAsync<BusinessRuleException>(
             () => Handler(null).HandleAsync(new CreateUserCommand("admin", "123", IsAdmin: true)));
 
         Assert.Contains("8", error.Message);
@@ -101,7 +102,7 @@ public class UserHandlersTests(PostgresFixture postgres) : IClassFixture<Postgre
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => handler.HandleAsync(new CreateUserCommand(name, "outra-senha-2", IsAdmin: false)));
-        await Assert.ThrowsAsync<ArgumentException>(
+        await Assert.ThrowsAsync<BusinessRuleException>(
             () => handler.HandleAsync(new CreateUserCommand(TestHandlers.UniqueUserName(), "curta", IsAdmin: false)));
     }
 

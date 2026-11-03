@@ -96,7 +96,7 @@ public class DatabaseInitializerTests(PostgresFixture postgres) : IClassFixture<
             ["Seed:AdminPassword"] = "123",
         });
 
-        await Assert.ThrowsAsync<ArgumentException>(() => RunInitializerAsync(provider));
+        await Assert.ThrowsAsync<BusinessRuleException>(() => RunInitializerAsync(provider));
     }
 
     [Fact]
