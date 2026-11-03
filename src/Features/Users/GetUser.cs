@@ -5,7 +5,7 @@ using VGS.FinanceIA.Framework.Cqrs;
 namespace VGS.FinanceIA.Features.Users;
 
 /// <summary><paramref name="MenuCodes"/> são os menus concedidos diretamente (ignorados para administrador).</summary>
-public sealed record UserDetail(Guid Id, string UserName, bool IsAdmin, IReadOnlyList<string> MenuCodes);
+public sealed record UserDetail(Guid Id, string UserName, string Email, string? FullName, bool IsAdmin, IReadOnlyList<string> MenuCodes);
 
 /// <summary>Um usuário ativo, ou nulo se não existir (ou tiver sido excluído).</summary>
 public sealed record GetUserQuery(Guid UserId) : IQuery<UserDetail?>;
@@ -16,7 +16,7 @@ public sealed class GetUserHandler(AppDbContext db) : IQueryHandler<GetUserQuery
     {
         var user = await db.Users
             .Where(u => u.Id == query.UserId)
-            .Select(u => new { u.Id, u.UserName, u.IsAdmin })
+            .Select(u => new { u.Id, u.UserName, u.Email, u.FullName, u.IsAdmin })
             .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
@@ -29,6 +29,6 @@ public sealed class GetUserHandler(AppDbContext db) : IQueryHandler<GetUserQuery
             .Select(p => p.MenuItem!.Code)
             .ToListAsync(cancellationToken);
 
-        return new UserDetail(user.Id, user.UserName, user.IsAdmin, codes);
+        return new UserDetail(user.Id, user.UserName, user.Email, user.FullName, user.IsAdmin, codes);
     }
 }

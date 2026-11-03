@@ -90,14 +90,15 @@ public sealed class DatabaseSeeder(AppDbContext db, ICommandHandler<EnsureInitia
     {
         var userName = configuration["Seed:AdminUserName"];
         var password = configuration["Seed:AdminPassword"];
+        var email = configuration["Seed:AdminEmail"];
 
-        if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(email))
         {
-            logger.LogWarning("Seed:AdminUserName/Seed:AdminPassword não configurados: administrador inicial não será criado.");
+            logger.LogWarning("Seed:AdminUserName/Seed:AdminPassword/Seed:AdminEmail não configurados: administrador inicial não será criado.");
             return;
         }
 
-        if (await ensureInitialAdmin.HandleAsync(new EnsureInitialAdminCommand(userName, password), cancellationToken))
+        if (await ensureInitialAdmin.HandleAsync(new EnsureInitialAdminCommand(userName, password, email), cancellationToken))
         {
             logger.LogInformation("Administrador inicial '{UserName}' criado.", UserNames.Normalize(userName));
         }

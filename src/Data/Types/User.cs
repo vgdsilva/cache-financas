@@ -7,9 +7,17 @@ namespace VGS.FinanceIA.Data.Types;
 [Index(nameof(UserName), nameof(SystemDeleted), IsUnique = true)]
 public class User : EntityControl
 {
-    /// <summary>Sempre em minúsculas (normalizado pelo UserService).</summary>
+    /// <summary>Login. Sempre em minúsculas; só letras, dígitos, ponto, hífen e underscore (3 a 40 caracteres).</summary>
     [Column("user_name", TypeName = "text")]
     public string UserName { get; set; } = string.Empty;
+
+    /// <summary>Sempre em minúsculas. Obrigatório para quem é cadastrado pela tela; usuários antigos podem estar vazios até a próxima edição.</summary>
+    [Column("email", TypeName = "text")]
+    public string Email { get; set; } = string.Empty;
+
+    /// <summary>Opcional. Aparece em cabeçalhos e listas no lugar do login.</summary>
+    [Column("full_name", TypeName = "text")]
+    public string? FullName { get; set; }
 
     [Column("password_hash", TypeName = "text")]
     public string PasswordHash { get; set; } = string.Empty;

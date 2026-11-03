@@ -11,6 +11,8 @@ namespace VGS.FinanceIA.Features.Users;
 public sealed record RegisterUserCommand(
     Guid ActingUserId,
     string UserName,
+    string Email,
+    string? FullName,
     string Password,
     bool IsAdmin,
     IReadOnlyCollection<string> MenuCodes) : ICommand<Guid>;
@@ -27,7 +29,9 @@ public sealed class RegisterUserHandler(
         // Usuário e menus na mesma transação: se um menu for inválido, o usuário não fica criado pela metade.
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        var userId = await createUser.HandleAsync(new CreateUserCommand(command.UserName, command.Password, command.IsAdmin), cancellationToken);
+        var userId = await createUser.HandleAsync(
+            new CreateUserCommand(command.UserName, command.Password, command.IsAdmin, command.Email, command.FullName),
+            cancellationToken);
 
         if (!command.IsAdmin)
         {

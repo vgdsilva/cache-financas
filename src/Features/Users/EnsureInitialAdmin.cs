@@ -5,7 +5,7 @@ using VGS.FinanceIA.Framework.Cqrs;
 namespace VGS.FinanceIA.Features.Users;
 
 /// <summary>Cria o administrador inicial apenas se ainda não existir nenhum usuário. Devolve true se criou.</summary>
-public sealed record EnsureInitialAdminCommand(string UserName, string Password) : ICommand<bool>;
+public sealed record EnsureInitialAdminCommand(string UserName, string Password, string Email) : ICommand<bool>;
 
 public sealed class EnsureInitialAdminHandler(AppDbContext db, ICommandHandler<CreateUserCommand, Guid> createUser)
     : ICommandHandler<EnsureInitialAdminCommand, bool>
@@ -17,7 +17,9 @@ public sealed class EnsureInitialAdminHandler(AppDbContext db, ICommandHandler<C
             return false;
         }
 
-        await createUser.HandleAsync(new CreateUserCommand(command.UserName, command.Password, IsAdmin: true), cancellationToken);
+        await createUser.HandleAsync(
+            new CreateUserCommand(command.UserName, command.Password, IsAdmin: true, command.Email),
+            cancellationToken);
 
         return true;
     }

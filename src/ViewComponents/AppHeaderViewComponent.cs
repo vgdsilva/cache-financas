@@ -31,7 +31,7 @@ public class AppHeaderViewComponent(
 
         // Sem perfil (usuário removido com cookie ainda válido): cai no nome do cookie e perfil comum.
         var model = new AppHeaderModel(
-            user?.UserName ?? HttpContext.User.Identity?.Name ?? string.Empty,
+            user?.DisplayName ?? HttpContext.User.Identity?.Name ?? string.Empty,
             (user ?? new UserProfile(string.Empty, false)).RoleLabel,
             canChat,
             Menus.UrlOf(Menus.Chat));

@@ -147,6 +147,15 @@ namespace VGS.FinanceIA.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text")
+                        .HasColumnName("full_name");
+
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean")
                         .HasColumnName("is_admin");
