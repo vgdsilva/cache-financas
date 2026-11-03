@@ -1,0 +1,14 @@
+@page "/configuracoes/usuarios/create"
+@model CriarModel
+@{
+    ViewData["Title"] = "Novo usuário";
+}
+
+<div class="page-header">
+  <div class="page-crumb">Configurações · Usuários</div>
+  <h1>Novo usuário</h1>
+</div>
+
+<form method="post" class="card form form--narrow">
+  <partial name="_Formulario" model="Model" />
+</form>

@@ -123,6 +123,16 @@
     });
   }
 
+  // ---- Cadastro de usuário: administrador acessa todos os menus, então a lista de menus fica desabilitada ----
+  document.querySelectorAll("[data-admin-toggle]").forEach((checkbox) => {
+    const menus = document.querySelector("[data-menus]");
+    if (!menus) return;
+
+    const sync = () => { menus.disabled = checkbox.checked; };
+    checkbox.addEventListener("change", sync);
+    sync();
+  });
+
   // ---- Login: mostrar/ocultar senha e estado de carregando ----
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
     const input = button.closest(".input-group")?.querySelector("input");

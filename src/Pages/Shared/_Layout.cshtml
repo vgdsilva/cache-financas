@@ -12,6 +12,10 @@
       <div class="app-col">
         @await Component.InvokeAsync("AppHeader")
         <main class="app-main" id="main">
+          @if (ViewContext.TempData["Success"] is string successMessage)
+          {
+            <div class="alert alert-success" role="status">@successMessage</div>
+          }
           @RenderBody()
         </main>
       </div>

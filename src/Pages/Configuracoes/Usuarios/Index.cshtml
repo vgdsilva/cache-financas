@@ -1,7 +1,93 @@
 @page "/configuracoes/usuarios"
-@attribute [RequireMenu(Menus.Users)]
+@model IndexModel
 @{
-    ViewData["Title"] = Menus.Find(Menus.Users)!.Description;
+    ViewData["Title"] = "Usuários";
 }
 
-<partial name="_UnderConstruction" model="Menus.Users" />
+<div class="page-header page-header--split">
+  <div>
+    <div class="page-crumb">Configurações</div>
+    <h1>Usuários</h1>
+  </div>
+  @if (Model.IsAdmin)
+  {
+    <a class="btn btn-primary btn-sm" asp-page="Criar">Novo usuário</a>
+  }
+</div>
+
+<form method="get" class="toolbar" role="search">
+  <input type="search" name="q" value="@Model.Search" placeholder="Buscar usuário" aria-label="Buscar usuário" autocomplete="off" />
+  <button type="submit" class="btn btn-secondary btn-sm">Buscar</button>
+  @if (!string.IsNullOrWhiteSpace(Model.Search))
+  {
+    <a class="btn btn-ghost btn-sm" asp-page="Index">Limpar</a>
+  }
+</form>
+
+@if (Model.Users.Count == 0)
+{
+  <div class="card">
+    <p class="card-title">Nenhum usuário encontrado</p>
+    <p class="card-text">@(string.IsNullOrWhiteSpace(Model.Search) ? "Ainda não há usuários cadastrados." : "Nenhum usuário corresponde à busca.")</p>
+  </div>
+}
+else
+{
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Usuário</th>
+          <th>Perfil</th>
+          <th class="col-hide-sm">Menus</th>
+          <th class="col-hide-sm">Criado em</th>
+          @if (Model.IsAdmin)
+          {
+            <th class="col-actions"><span class="sr-only">Ações</span></th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var user in Model.Users)
+        {
+          var isSelf = user.Id == Model.CurrentUserId;
+          <tr>
+            <td>
+              <div class="cell-user">
+                <span class="avatar" aria-hidden="true">@user.UserName[..1].ToUpperInvariant()</span>
+                <span class="cell-user-name">@user.UserName</span>
+                @if (isSelf)
+                {
+                  <span class="badge">você</span>
+                }
+              </div>
+            </td>
+            <td>
+              @if (user.IsAdmin)
+              {
+                <span class="badge badge--brand">Administrador</span>
+              }
+              else
+              {
+                <span class="badge">Usuário</span>
+              }
+            </td>
+            <td class="col-hide-sm">@(user.IsAdmin ? "Todos" : user.MenuCount.ToString())</td>
+            <td class="col-hide-sm">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+            @if (Model.IsAdmin)
+            {
+              <td class="col-actions">
+                <a class="link-action" asp-page="Editar" asp-route-id="@user.Id">Editar</a>
+                <a class="link-action" asp-page="Senha" asp-route-id="@user.Id">Senha</a>
+                @if (!isSelf)
+                {
+                  <a class="link-action link-action--danger" asp-page="Excluir" asp-route-id="@user.Id">Excluir</a>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

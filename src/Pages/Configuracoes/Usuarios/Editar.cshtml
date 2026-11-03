@@ -1,0 +1,17 @@
+@page "/configuracoes/usuarios/edit/{id:guid}"
+@model EditarModel
+@{
+    ViewData["Title"] = "Editar usuário";
+}
+
+<div class="page-header page-header--split">
+  <div>
+    <div class="page-crumb">Configurações · Usuários</div>
+    <h1>Editar usuário</h1>
+  </div>
+  <a class="btn btn-secondary btn-sm" asp-page="Senha" asp-route-id="@Model.UserId">Redefinir senha</a>
+</div>
+
+<form method="post" class="card form form--narrow">
+  <partial name="_Formulario" model="Model" />
+</form>

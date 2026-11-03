@@ -1,0 +1,30 @@
+@page "/configuracoes/usuarios/delete/{id:guid}"
+@model ExcluirModel
+@{
+    ViewData["Title"] = "Excluir usuário";
+}
+
+<div class="page-header">
+  <div class="page-crumb">Configurações · Usuários</div>
+  <h1>Excluir usuário</h1>
+</div>
+
+<form method="post" class="card form form--narrow">
+  <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
+
+  <p class="card-title">Excluir <strong>@Model.UserName</strong>?</p>
+  <p class="card-text">O usuário perde o acesso na hora, junto com os menus e as configurações dele. O cadastro fica guardado, e um novo usuário pode reutilizar este nome.</p>
+
+  @if (Model.IsSelf)
+  {
+    <div class="alert alert-error" role="alert">Você não pode excluir o seu próprio usuário.</div>
+  }
+
+  <div class="form-actions">
+    @if (!Model.IsSelf)
+    {
+      <button type="submit" class="btn btn-danger">Excluir</button>
+    }
+    <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
+  </div>
+</form>
