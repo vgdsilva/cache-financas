@@ -1,0 +1,7 @@
+@page "/configuracoes/usuarios"
+@attribute [RequireMenu(Menus.Users)]
+@{
+    ViewData["Title"] = Menus.Find(Menus.Users)!.Description;
+}
+
+<partial name="_UnderConstruction" model="Menus.Users" />

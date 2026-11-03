@@ -1,0 +1,7 @@
+@page "/cadastros/lancamentos"
+@attribute [RequireMenu(Menus.Transactions)]
+@{
+    ViewData["Title"] = Menus.Find(Menus.Transactions)!.Description;
+}
+
+<partial name="_UnderConstruction" model="Menus.Transactions" />
