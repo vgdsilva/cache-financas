@@ -5,7 +5,9 @@ using VGS.FinanceIA.Framework.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
+// MVC (Controllers + Views). POSTs exigem token antiforgery por padrão (o tag helper de <form> já o emite).
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute()));
 builder.Services.AddHealthChecks();
 
 builder.Services.AddFrameworkDatabase(builder.Configuration);

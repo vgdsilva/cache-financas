@@ -19,7 +19,7 @@ public class PageRoutesTests(TestWebApplicationFactory factory) : IClassFixture<
 
     private List<PageRoute> PageRoutes() => factory.Services.GetRequiredService<EndpointDataSource>().Endpoints
         .OfType<RouteEndpoint>()
-        .Where(e => e.Metadata.GetMetadata<Microsoft.AspNetCore.Mvc.RazorPages.CompiledPageActionDescriptor>() is not null)
+        .Where(e => e.Metadata.GetMetadata<Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor>() is not null)
         .Select(e => new PageRoute(
             "/" + e.RoutePattern.RawText!.TrimStart('/'),
             e.Metadata.GetOrderedMetadata<IAuthorizeData>()

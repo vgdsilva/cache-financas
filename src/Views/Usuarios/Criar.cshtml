@@ -1,0 +1,17 @@
+@model UsuarioFormViewModel
+@{
+    ViewData["Title"] = "Novo usuário";
+}
+
+<header class="page-head">
+  <a class="page-back" asp-action="Index" title="Voltar" aria-label="Voltar para a lista de usuários"><partial name="_Icone" model='"voltar"' /></a>
+  <h1 class="page-title">Novo usuário</h1>
+  <div class="page-actions">
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+    <button type="submit" class="btn btn-primary" form="form-usuario">Salvar</button>
+  </div>
+</header>
+
+<form id="form-usuario" method="post" class="crud-form">
+  <partial name="_Formulario" model="Model" />
+</form>

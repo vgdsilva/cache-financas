@@ -1,0 +1,38 @@
+@model ExcluirViewModel
+@{
+    ViewData["Title"] = "Excluir usuário";
+}
+
+@* Ação destrutiva: o botão vermelho fica dentro da confirmação, nunca no cabeçalho. *@
+<header class="page-head">
+  <a class="page-back" asp-action="Index" title="Voltar" aria-label="Voltar para a lista de usuários"><partial name="_Icone" model='"voltar"' /></a>
+  <h1 class="page-title">Excluir usuário</h1>
+</header>
+
+<form method="post" class="crud-form">
+  <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Confirmação</h2>
+    </div>
+
+    <div class="section-body">
+      <p class="section-text">Excluir <strong>@Model.UserName</strong>?</p>
+      <p class="section-text section-text--muted">O usuário perde o acesso na hora, junto com os menus e as configurações dele. O cadastro fica guardado, e um novo usuário pode reutilizar este nome.</p>
+
+      @if (Model.IsSelf)
+      {
+        <div class="alert alert-error" role="alert">Você não pode excluir o seu próprio usuário.</div>
+      }
+
+      <div class="form-footer">
+        @if (!Model.IsSelf)
+        {
+          <button type="submit" class="btn btn-danger">Excluir</button>
+        }
+        <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+      </div>
+    </div>
+  </section>
+</form>

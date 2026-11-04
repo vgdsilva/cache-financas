@@ -17,12 +17,12 @@ public static class WebApplicationExtensions
         return app;
     }
 
-    /// <summary>Endpoints públicos (estáticos e health) e as Razor Pages.</summary>
+    /// <summary>Endpoints públicos (estáticos e health) e os controllers MVC.</summary>
     public static WebApplication MapFramework(this WebApplication app)
     {
         app.MapStaticAssets().AllowAnonymous();
         app.MapHealthChecks("/health").AllowAnonymous();
-        app.MapRazorPages().WithStaticAssets();
+        app.MapControllers().WithStaticAssets();
 
         return app;
     }
