@@ -8,95 +8,95 @@
   <h1 class="page-title">Usuários</h1>
   @if (Model.IsAdmin)
   {
-    <div class="page-actions">
-      <a class="btn btn-primary" asp-action="Criar">Novo usuário</a>
+    @* Editar, Redefinir senha e Remover agem sobre a linha selecionada na tabela (site.js, [data-grid-actions]); sem JS ficam ocultos e o usuário abre a edição pelo link da primeira coluna. *@
+    <div class="page-actions" data-grid-actions>
+      <a class="btn btn-primary" asp-action="Criar"><partial name="_Icone" model='"adicionar"' />Adicionar</a>
+      <a class="btn" data-row-action="editUrl" aria-disabled="true" hidden><partial name="_Icone" model='"editar"' />Editar</a>
+      <a class="btn" data-row-action="passwordUrl" aria-disabled="true" hidden><partial name="_Icone" model='"senha"' />Redefinir senha</a>
+      <a class="btn" data-row-action="deleteUrl" aria-disabled="true" hidden><partial name="_Icone" model='"remover"' />Remover</a>
     </div>
   }
 </header>
 
-<section class="section">
-  <div class="section-head">
-    <h2 class="section-title">Usuários cadastrados</h2>
-    <div class="section-actions">
-      <a class="text-action" asp-action="Index"><partial name="_Icone" model='"atualizar"' /> Atualizar</a>
+<div class="widget">
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Usuários cadastrados</h2>
+      <div class="section-actions">
+        <a class="text-action" asp-action="Index"><partial name="_Icone" model='"atualizar"' /> Atualizar</a>
+      </div>
     </div>
-  </div>
 
-  @* Tabela do padrão de CRUD: cabeçalho → linha de filtros → dados. Filtros e paginação rodam no navegador (site.js, [data-grid]). *@
-  <div class="data-grid-wrap" data-grid data-page-size="10">
-    <div class="data-grid-scroll">
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>Usuário</th>
-            <th class="col-hide-sm">Nome</th>
-            <th class="col-hide-sm">E-mail</th>
-            <th>Perfil</th>
-            <th class="col-hide-sm">Menus</th>
-            <th class="col-hide-sm">Criado em</th>
-            @if (Model.IsAdmin)
-            {
-              <th class="col-actions"><span class="sr-only">Ações</span></th>
-            }
-          </tr>
-          <tr class="grid-filter">
-            <td><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="0" aria-label="Filtrar por usuário" autocomplete="off" /></label></td>
-            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="1" aria-label="Filtrar por nome" autocomplete="off" /></label></td>
-            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="2" aria-label="Filtrar por e-mail" autocomplete="off" /></label></td>
-            <td><label class="grid-filter-cell"><partial name="_Icone" model='"lista"' /><input type="search" data-grid-filter="3" aria-label="Filtrar por perfil" autocomplete="off" /></label></td>
-            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"igual"' /><input type="search" data-grid-filter="4" aria-label="Filtrar por quantidade de menus" autocomplete="off" /></label></td>
-            <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"igual"' /><input type="search" data-grid-filter="5" aria-label="Filtrar por data de criação" autocomplete="off" /></label></td>
-            @if (Model.IsAdmin)
-            {
-              <td class="col-actions"></td>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @foreach (var user in Model.Users)
-          {
-            var isSelf = user.Id == Model.CurrentUserId;
-            <tr data-grid-row>
-              <td><span class="cell-strong">@user.UserName</span>@if (isSelf) { <span class="cell-aside">você</span> }</td>
-              <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.FullName) ? "—" : user.FullName)</td>
-              <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.Email) ? "—" : user.Email)</td>
-              <td>
-                @if (user.IsAdmin)
-                {
-                  <span class="cell-accent">Administrador</span>
-                }
-                else
-                {
-                  <text>Usuário</text>
-                }
-              </td>
-              <td class="col-hide-sm">@(user.IsAdmin ? "Todos" : user.MenuCount.ToString())</td>
-              <td class="col-hide-sm">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
-              @if (Model.IsAdmin)
-              {
-                <td class="col-actions">
-                  <span class="cell-actions">
-                    <a class="icon-button icon-button--edit" asp-action="Editar" asp-route-id="@user.Id" title="Editar" aria-label="Editar @user.UserName"><partial name="_Icone" model='"editar"' /></a>
-                    <a class="icon-button" asp-action="Senha" asp-route-id="@user.Id" title="Redefinir senha" aria-label="Redefinir a senha de @user.UserName"><partial name="_Icone" model='"senha"' /></a>
-                    @if (!isSelf)
-                    {
-                      <a class="icon-button icon-button--danger" asp-action="Excluir" asp-route-id="@user.Id" title="Excluir" aria-label="Excluir @user.UserName"><partial name="_Icone" model='"excluir"' /></a>
-                    }
-                  </span>
-                </td>
-              }
+    @* Tabela do padrão de CRUD: títulos → linha de filtros → dados. Filtros, paginação e seleção da linha rodam no navegador (site.js, [data-grid]). *@
+    <div class="data-grid-wrap" data-grid data-page-size="10">
+      <div class="data-grid-scroll">
+        <table class="data-grid">
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th class="col-hide-sm">Nome</th>
+              <th class="col-hide-sm">E-mail</th>
+              <th>Perfil</th>
+              <th class="col-hide-sm">Menus</th>
+              <th class="col-hide-sm">Criado em</th>
             </tr>
-          }
-          <tr class="grid-empty" data-grid-empty hidden="@(total > 0)">
-            <td colspan="@(Model.IsAdmin ? 7 : 6)">Nenhum usuário encontrado.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <tr class="grid-filter">
+              <td><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="0" aria-label="Filtrar por usuário" autocomplete="off" /></label></td>
+              <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="1" aria-label="Filtrar por nome" autocomplete="off" /></label></td>
+              <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"pesquisar"' /><input type="search" data-grid-filter="2" aria-label="Filtrar por e-mail" autocomplete="off" /></label></td>
+              <td><label class="grid-filter-cell"><partial name="_Icone" model='"lista"' /><input type="search" data-grid-filter="3" aria-label="Filtrar por perfil" autocomplete="off" /></label></td>
+              <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"igual"' /><input type="search" data-grid-filter="4" aria-label="Filtrar por quantidade de menus" autocomplete="off" /></label></td>
+              <td class="col-hide-sm"><label class="grid-filter-cell"><partial name="_Icone" model='"igual"' /><input type="search" data-grid-filter="5" aria-label="Filtrar por data de criação" autocomplete="off" /></label></td>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var user in Model.Users)
+            {
+              var isSelf = user.Id == Model.CurrentUserId;
+              @* Atributo com valor nulo não é escrito: só o administrador seleciona a linha, e quem é o próprio usuário não tem "Remover". *@
+              <tr data-grid-row
+                  tabindex="@(Model.IsAdmin ? "0" : null)"
+                  data-edit-url="@(Model.IsAdmin ? Url.Action("Editar", new { id = user.Id }) : null)"
+                  data-password-url="@(Model.IsAdmin ? Url.Action("Senha", new { id = user.Id }) : null)"
+                  data-delete-url="@(Model.IsAdmin && !isSelf ? Url.Action("Excluir", new { id = user.Id }) : null)">
+                <td>
+                  @if (Model.IsAdmin)
+                  {
+                    <a class="cell-link cell-strong" asp-action="Editar" asp-route-id="@user.Id">@user.UserName</a>
+                  }
+                  else
+                  {
+                    <span class="cell-strong">@user.UserName</span>
+                  }
+                  @if (isSelf) { <span class="cell-aside">você</span> }
+                </td>
+                <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.FullName) ? "—" : user.FullName)</td>
+                <td class="col-hide-sm">@(string.IsNullOrWhiteSpace(user.Email) ? "—" : user.Email)</td>
+                <td>
+                  @if (user.IsAdmin)
+                  {
+                    <span class="cell-accent">Administrador</span>
+                  }
+                  else
+                  {
+                    <text>Usuário</text>
+                  }
+                </td>
+                <td class="col-hide-sm">@(user.IsAdmin ? "Todos" : user.MenuCount.ToString())</td>
+                <td class="col-hide-sm">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+              </tr>
+            }
+            <tr class="grid-empty" data-grid-empty hidden="@(total > 0)">
+              <td colspan="6">Nenhum usuário encontrado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <div class="grid-foot">
-      <span data-grid-summary>@(total == 0 ? "Nenhum registro encontrado" : $"Exibindo 1–{total} de {total} registros")</span>
-      <nav class="pager" data-grid-pager aria-label="Paginação" hidden></nav>
+      <div class="grid-foot">
+        <span data-grid-summary>@(total == 0 ? "Nenhum registro encontrado" : $"Exibindo 1–{total} de {total} registros")</span>
+        <nav class="pager" data-grid-pager aria-label="Paginação" hidden></nav>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>

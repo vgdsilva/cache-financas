@@ -4,38 +4,39 @@
 }
 
 <header class="page-head">
-  <a class="page-back" asp-action="Index" title="Voltar" aria-label="Voltar para a lista de usuários"><partial name="_Icone" model='"voltar"' /></a>
   <h1 class="page-title">Redefinir senha</h1>
   <div class="page-actions">
-    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
-    <button type="submit" class="btn btn-primary" form="form-senha">Salvar</button>
+    <a class="btn btn-secondary" asp-action="Index"><partial name="_Icone" model='"desfazer"' />Cancelar</a>
+    <button type="submit" class="btn btn-primary" form="form-senha"><partial name="_Icone" model='"salvar"' />Salvar</button>
   </div>
 </header>
 
 <form id="form-senha" method="post" class="crud-form">
   <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
 
-  <section class="section">
-    <div class="section-head">
-      <h2 class="section-title">Nova senha de @Model.UserName</h2>
-    </div>
+  <div class="widget">
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Nova senha de @Model.UserName</h2>
+      </div>
 
-    <div class="section-body">
-      <p class="section-text section-text--muted">As sessões que ele já tiver abertas continuam valendo até expirar.</p>
+      <div class="section-body">
+        <p class="section-text section-text--muted">As sessões que ele já tiver abertas continuam valendo até expirar.</p>
 
-      <div class="field-grid">
-        <div class="field col-4">
-          <label asp-for="Input.NewPassword">Nova senha *</label>
-          <input asp-for="Input.NewPassword" type="password" autocomplete="new-password" autofocus />
-          <span asp-validation-for="Input.NewPassword" class="field-error"></span>
-        </div>
+        <div class="field-grid">
+          <div class="field col-4">
+            <label asp-for="Input.NewPassword">Nova senha *</label>
+            <input asp-for="Input.NewPassword" type="password" autocomplete="new-password" autofocus />
+            <span asp-validation-for="Input.NewPassword" class="field-error"></span>
+          </div>
 
-        <div class="field col-4">
-          <label asp-for="Input.ConfirmNewPassword">Confirmar nova senha *</label>
-          <input asp-for="Input.ConfirmNewPassword" type="password" autocomplete="new-password" />
-          <span asp-validation-for="Input.ConfirmNewPassword" class="field-error"></span>
+          <div class="field col-4">
+            <label asp-for="Input.ConfirmNewPassword">Confirmar nova senha *</label>
+            <input asp-for="Input.ConfirmNewPassword" type="password" autocomplete="new-password" />
+            <span asp-validation-for="Input.ConfirmNewPassword" class="field-error"></span>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </form>

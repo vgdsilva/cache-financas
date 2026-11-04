@@ -1,4 +1,4 @@
-@* Página base de um menu: cabeçalho (título vindo do catálogo) + aviso. Model = código do menu. *@
+@* Página base de um menu: barra do topo (título vindo do catálogo) + aviso. Model = código do menu. *@
 @model string
 @{
     var menu = Menus.Find(Model) ?? throw new InvalidOperationException($"Menu '{Model}' não existe no catálogo.");
@@ -9,13 +9,15 @@
   <h1 class="page-title">@menu.Description</h1>
 </header>
 
-<section class="section">
-  <div class="section-head">
-    <h2 class="section-title">@(parentTitle is null ? menu.Description : $"{parentTitle} · {menu.Description}")</h2>
-  </div>
+<div class="widget">
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">@(parentTitle is null ? menu.Description : $"{parentTitle} · {menu.Description}")</h2>
+    </div>
 
-  <div class="section-body">
-    <p class="section-text">Em construção</p>
-    <p class="section-text section-text--muted">Esta tela ainda será construída. A rota <code>@menu.Url</code> e a permissão do menu já estão valendo.</p>
-  </div>
-</section>
+    <div class="section-body">
+      <p class="section-text">Em construção</p>
+      <p class="section-text section-text--muted">Esta tela ainda será construída. A rota <code>@menu.Url</code> e a permissão do menu já estão valendo.</p>
+    </div>
+  </section>
+</div>
