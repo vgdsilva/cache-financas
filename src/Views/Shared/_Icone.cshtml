@@ -1,45 +1,23 @@
-@* Ícones do padrão de CRUD: sempre traçados (nunca preenchidos), base 12x12, pontas arredondadas. Model = nome do ícone.
-   Tamanho e traço vêm do CSS (.ico); a cor é a do texto ao redor (currentColor). Ícone novo = um case aqui. *@
+@* Ícones do padrão de CRUD: Font Awesome, como no CRM (fonte em wwwroot/fonts, glifos em site.css). Model = nome do ícone.
+   Tamanho vem do CSS (.ico); a cor é a do texto ao redor. Ícone novo = glifo `.fa-xxx::before` em site.css + um case aqui. *@
 @model string
 
-@switch (Model)
-{
-    case "voltar":
-        <svg class="ico ico--back" viewBox="0 0 16 14" aria-hidden="true"><path d="M15 7H2M7 1.5 1.5 7 7 12.5" /></svg>
-        break;
-    case "adicionar":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8" /></svg>
-        break;
-    case "editar":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 10l.6-2.5L8 2.1a1 1 0 0 1 1.4 0l.5.5a1 1 0 0 1 0 1.4L4.5 9.4z" /><path d="M7 3.2l1.8 1.8" /></svg>
-        break;
-    case "excluir":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 3.5h8M4.5 3.5V2.2h3v1.3M3.2 3.5l.4 6.3h4.8l.4-6.3M5 5.4v2.8M7 5.4v2.8" /></svg>
-        break;
-    case "senha":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><circle cx="4" cy="8" r="2" /><path d="M5.5 6.5 10 2M8.4 3.6 9.8 5" /></svg>
-        break;
-    case "atualizar":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M10 6a4 4 0 1 1-1.2-2.8M10 1.8v2.4H7.6" /></svg>
-        break;
-    case "redirecionar":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6 6.5 9.5" /></svg>
-        break;
-    case "pesquisar":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><circle cx="5.2" cy="5.2" r="3.2" /><path d="M7.6 7.6 10.5 10.5" /></svg>
-        break;
-    case "igual":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5h7M2.5 7.5h7" /></svg>
-        break;
-    case "lista":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 3h8M2 6h8M2 9h8" /></svg>
-        break;
-    case "anterior":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 2.5 4 6l3.5 3.5" /></svg>
-        break;
-    case "proxima":
-        <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" /></svg>
-        break;
-    default:
-        throw new InvalidOperationException($"Ícone '{Model}' não existe em _Icone.cshtml.");
+@{
+    var glyph = Model switch
+    {
+        "adicionar" => "fa-plus",
+        "editar" => "fa-edit",
+        "remover" => "fa-times",
+        "excluir" => "fa-trash",
+        "salvar" => "fa-save",
+        "desfazer" => "fa-undo",
+        "senha" => "fa-key",
+        "atualizar" => "fa-sync",
+        "redirecionar" => "fa-arrow-right",
+        "pesquisar" => "fa-search",
+        "igual" => "fa-equals",
+        "lista" => "fa-bars",
+        _ => throw new InvalidOperationException($"Ícone '{Model}' não existe em _Icone.cshtml.")
+    };
 }
+<i class="ico @glyph" aria-hidden="true"></i>

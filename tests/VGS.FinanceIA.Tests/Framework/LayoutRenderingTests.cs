@@ -168,45 +168,42 @@ public class LayoutRenderingTests
     }
 
     [Fact]
-    public async Task Header_OffersThreeThemeOptions_WithSystemAsDefault()
+    public async Task Header_HasNoThemePicker_BecauseTheAppIsLightOnly()
     {
         using var factory = new AuthenticatedFactory();
 
         var html = await GetHomeAsync(factory);
 
-        Assert.Contains("data-theme-option=\"light\" aria-pressed=\"false\"", html);
-        Assert.Contains("data-theme-option=\"dark\" aria-pressed=\"false\"", html);
-        Assert.Contains("data-theme-option=\"system\" aria-pressed=\"true\"", html);
+        Assert.DoesNotContain("data-theme-option", html);
     }
 
     [Fact]
-    public async Task EveryPage_AppliesSavedThemeBeforeFirstPaint()
+    public async Task EveryPage_AppliesCollapsedSidebarBeforeFirstPaint()
     {
         using var factory = new TestWebApplicationFactory();
         using var client = factory.CreateClient();
 
         var login = await client.GetStringAsync("/Login");
 
-        // O script inline do <head> precisa vir antes do CSS, para a página não piscar no tema errado.
-        var script = login.IndexOf("localStorage.getItem(\"theme\")", StringComparison.Ordinal);
+        // O script inline do <head> precisa vir antes do CSS, para a página não piscar no estado errado.
+        var script = login.IndexOf("localStorage.getItem(\"nav-collapsed\")", StringComparison.Ordinal);
         var stylesheet = login.IndexOf("rel=\"stylesheet\"", StringComparison.Ordinal);
 
-        Assert.True(script >= 0, "Script do tema ausente no <head>.");
-        Assert.True(script < stylesheet, "O script do tema deve vir antes do CSS.");
+        Assert.True(script >= 0, "Script do estado da sidebar ausente no <head>.");
+        Assert.True(script < stylesheet, "O script do estado da sidebar deve vir antes do CSS.");
     }
 
     [Fact]
-    public async Task Css_SupportsLightDarkAndSystemThemes()
+    public async Task Css_IsLightOnly()
     {
         using var factory = new TestWebApplicationFactory();
         using var client = factory.CreateClient();
 
         var css = await client.GetStringAsync("/css/site.css");
 
-        Assert.Contains("color-scheme: light dark", css);          // segue o aparelho por padrão
-        Assert.Contains(":root[data-theme=\"light\"]", css);       // força claro
-        Assert.Contains(":root[data-theme=\"dark\"]", css);        // força escuro
-        Assert.Contains("light-dark(", css);
-        Assert.DoesNotContain("prefers-color-scheme: dark", css);  // paleta única, sem bloco duplicado
+        Assert.Contains("color-scheme: light;", css);
+        Assert.DoesNotContain("light-dark(", css);
+        Assert.DoesNotContain("data-theme", css);
+        Assert.DoesNotContain("prefers-color-scheme", css);
     }
 }

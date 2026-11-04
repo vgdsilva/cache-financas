@@ -3,47 +3,6 @@
 
   const COLLAPSE_KEY = "nav-collapsed";
 
-  // ---- Tema: "light", "dark" ou "system" (sem atributo: segue o aparelho). O <head> já aplicou o salvo. ----
-  const THEME_KEY = "theme";
-
-  const currentTheme = () => {
-    const attr = document.documentElement.getAttribute("data-theme");
-    return attr === "light" || attr === "dark" ? attr : "system";
-  };
-
-  const applyTheme = (theme) => {
-    if (theme === "light" || theme === "dark") {
-      document.documentElement.setAttribute("data-theme", theme);
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-    }
-
-    try {
-      if (theme === "system") {
-        localStorage.removeItem(THEME_KEY);
-      } else {
-        localStorage.setItem(THEME_KEY, theme);
-      }
-    } catch {
-      // Sem armazenamento (modo privado): a escolha só vale nesta página.
-    }
-
-    syncThemeButtons();
-  };
-
-  function syncThemeButtons() {
-    const theme = currentTheme();
-    document.querySelectorAll("[data-theme-option]").forEach((button) => {
-      button.setAttribute("aria-pressed", String(button.dataset.themeOption === theme));
-    });
-  }
-
-  document.querySelectorAll("[data-theme-option]").forEach((button) => {
-    button.addEventListener("click", () => applyTheme(button.dataset.themeOption));
-  });
-
-  syncThemeButtons();
-
   // ---- Shell: gaveta (mobile), sidebar recolhível (desktop) e menu do usuário ----
   const shell = document.querySelector("[data-app-shell]");
 
@@ -252,6 +211,85 @@
 
     filters.forEach((input) => input.addEventListener("input", () => { page = 1; render(); }));
     render();
+
+    // Linha selecionada: os botões da barra do topo ([data-grid-actions] > [data-row-action="nomeDoDataset"]) agem sobre ela.
+    // O endereço vem do data-* da linha; sem endereço (ex.: o próprio usuário não se remove) o botão fica desabilitado.
+    const actions = [...document.querySelectorAll("[data-grid-actions] [data-row-action]")];
+    if (actions.length === 0) return;
+
+    const selected = () => rows.find((row) => row.getAttribute("aria-selected") === "true");
+
+    const syncActions = () => {
+      const row = selected();
+      actions.forEach((button) => {
+        const url = row?.dataset[button.dataset.rowAction];
+        if (url) button.setAttribute("href", url); else button.removeAttribute("href");
+        button.setAttribute("aria-disabled", String(!url));
+      });
+    };
+
+    const select = (row) => {
+      rows.forEach((r) => r.removeAttribute("aria-selected"));
+      row?.setAttribute("aria-selected", "true");
+      syncActions();
+    };
+
+    actions.forEach((button) => {
+      button.hidden = false;
+      button.addEventListener("click", (event) => {
+        if (button.getAttribute("aria-disabled") === "true") event.preventDefault();
+      });
+    });
+
+    rows.forEach((row) => {
+      row.addEventListener("click", (event) => {
+        if (!event.target.closest("a")) select(row);
+      });
+      row.addEventListener("dblclick", () => { if (row.dataset.editUrl) window.location.href = row.dataset.editUrl; });
+      row.addEventListener("keydown", (event) => {
+        if (event.target !== row) return;
+        if (event.key === " ") { event.preventDefault(); select(row); }
+        if (event.key === "Enter" && row.dataset.editUrl) window.location.href = row.dataset.editUrl;
+      });
+    });
+
+    // Filtrar ou trocar de página pode esconder a linha selecionada: a seleção some junto.
+    const hideSelected = () => { if (selected()?.hidden) select(null); };
+    grid.addEventListener("input", hideSelected);
+    pager?.addEventListener("click", hideSelected);
+
+    syncActions();
+  });
+
+  // ---- Abas: sem JS as seções aparecem todas; com JS a barra de abas mostra uma por vez (abre na primeira que tem erro) ----
+  document.querySelectorAll("[data-tabs]").forEach((bar) => {
+    const tabs = [...bar.querySelectorAll("[role=tab]")];
+    const panelOf = (tab) => document.getElementById(tab.getAttribute("aria-controls"));
+
+    const show = (target) => {
+      tabs.forEach((tab) => {
+        const active = tab === target;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+        const panel = panelOf(tab);
+        if (panel) panel.hidden = !active;
+      });
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => show(tab));
+      tab.addEventListener("keydown", (event) => {
+        const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[event.key];
+        if (next === undefined) return;
+        event.preventDefault();
+        const target = tabs[(next + tabs.length) % tabs.length];
+        show(target);
+        target.focus();
+      });
+    });
+
+    bar.hidden = false;
+    show(tabs.find((tab) => panelOf(tab)?.querySelector(".input-validation-error")) ?? tabs[0]);
   });
 
   // ---- Login: mostrar/ocultar senha e estado de carregando ----

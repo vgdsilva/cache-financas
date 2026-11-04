@@ -1,55 +1,67 @@
 /* ==========================================================================
    CacheFinancas — estilos da aplicação (sem framework de CSS).
-   O shell logado reproduz a estrutura do layout de referência: sidebar de 18rem,
-   header de 3.5rem, breakpoint "md" em 768px (abaixo disso a sidebar é uma gaveta).
-   As cinzas são as do Tailwind (gray-50 … gray-950), para ficar idêntico.
+   Visual do CRM de trabalho: paleta (verde #4f853d / #a2c652 / #5baf00, cinza-oliva #6f776d), fontes Open Sans e
+   Trebuchet MS e Font Awesome nos ícones. Só tema claro (não há modo escuro).
+   O shell logado mantém a estrutura: sidebar de 18rem, header de 3,5rem, breakpoint "md" em 768px
+   (abaixo disso a sidebar é uma gaveta).
    ========================================================================== */
 
-/* Tema: `color-scheme: light dark` segue o aparelho; data-theme="light|dark" (definido pelo script do <head>
-   a partir da escolha do usuário) força um dos dois. light-dark(claro, escuro) escolhe o valor conforme o
-   esquema ativo, então cada cor existe uma vez só. */
+/* Fontes que acompanham o projeto (wwwroot/fonts): Open Sans (Apache 2.0) e Font Awesome 5 Free, só a família sólida (SIL OFL).
+   Trebuchet MS não é distribuída aqui: usa a do sistema e cai para a Open Sans onde não existir. */
+@font-face { font-family: "Open Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/OpenSans-Regular-webfont.woff") format("woff"); }
+@font-face { font-family: "Open Sans"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/OpenSans-Bold-webfont.woff") format("woff"); }
+@font-face { font-family: "Font Awesome 5 Free"; font-weight: 900; font-style: normal; font-display: block; src: url("../fonts/fa-solid-900.woff2") format("woff2"); }
+
+/* Paleta do CRM (theme_clover.css e coreversao4.css). Cada cor existe uma vez só; cor nova = token aqui. */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
-  --bg: light-dark(#ffffff, #030712);
-  --chrome: light-dark(#f9fafb, #030712);          /* sidebar e header (gray-50 / gray-950) */
-  --surface: light-dark(#ffffff, #111827);         /* cartões, inputs, dropdown (gray-900) */
-  --border: light-dark(#e5e7eb, #1f2937);          /* gray-200 / gray-800 */
-  --text: light-dark(#111827, #f3f4f6);            /* gray-900 / gray-100 */
-  --text-nav: light-dark(#374151, #e5e7eb);        /* gray-700 / gray-200 */
-  --muted: light-dark(#6b7280, #9ca3af);           /* gray-500 / gray-400 */
-  --label: #9ca3af;                                /* gray-400 nos dois */
-  --hover: light-dark(#f3f4f6, #1f2937);           /* gray-100 / gray-800 */
-  --avatar: light-dark(#e5e7eb, #374151);          /* gray-200 / gray-700 */
-  --seg-active: light-dark(#ffffff, #374151);      /* opção ativa do seletor de tema */
-  --brand: #0f766e;                                /* TODO: trocar pela cor da marca (aliare-600 na referência) */
-  --brand-hover: #115e59;
-  --brand-active: #134e4a;
-  --accent: light-dark(#0f766e, #2dd4bf);
-  --ring: light-dark(rgba(15, 118, 110, 0.35), rgba(45, 212, 191, 0.4));
-  --danger: light-dark(#b91c1c, #fca5a5);
-  --danger-bg: light-dark(#fef2f2, #2a1215);
-  --danger-border: light-dark(#fecaca, #7f1d1d);
-  --danger-solid: #b91c1c;                         /* botão de ação destrutiva */
-  --danger-solid-hover: #991b1b;
+  --font-body: "Open Sans", Tahoma, sans-serif;
+  --font-title: "Trebuchet MS", "Open Sans", Tahoma, sans-serif;
 
-  /* Padrão de CRUD (v5 do CRM): superfícies e estados. As medidas ficam logo abaixo. */
-  --border-input: light-dark(#c4c4c4, #374151);    /* campo em repouso */
-  --section: light-dark(#fafafa, #0b1220);         /* corpo da seção de formulário */
-  --row-hover: color-mix(in srgb, var(--accent) 8%, transparent);
-  --row-selected: color-mix(in srgb, var(--accent) 15%, transparent);
-  --disabled-bg: light-dark(#f2f2f2, #1f2937);
-  --disabled-text: light-dark(#a6a6a6, #6b7280);
-  --readonly-bg: light-dark(#fafafa, #0f172a);
-  --icon-muted: light-dark(#8c8c8c, #9ca3af);
-  --neutral-button: light-dark(#f0f0f0, #1f2937);  /* botão de ícone neutro (excluir ...) */
-  --neutral-button-fg: light-dark(#5a5a5a, #d1d5db);
-  --switch-off: light-dark(#d1d5db, #374151);
+  --bg: #e9ebe9;                                   /* fundo da página: rgba(111,119,109,.15) sobre branco */
+  --sidebar: #6f776d;                              /* sidebar (cinza-oliva do CRM) */
+  --surface: #ffffff;                              /* widget, header, campos, dropdown */
+  --border: #d1d1d1;
+  --text: #333333;
+  --text-nav: #474747;                             /* rótulos e texto de menu */
+  --muted: #757575;
+  --label: #999999;
+  --hover: #f0f1f0;
+  --avatar: #d1d1d1;
+  --brand: #4f853d;                                /* títulos, botão de destaque, links */
+  --brand-hover: #3f6a31;
+  --brand-active: #335627;
+  --brand-bright: #5baf00;                         /* item ativo da sidebar, marca */
+  --brand-soft: #a2c652;                           /* aba ativa, foco do campo, faixa do widget, página atual */
+  --accent: #4f853d;
+  --ring: rgba(162, 198, 82, 0.4);
+  --danger: #c0392b;
+  --danger-bg: #fbeceb;
+  --danger-border: #e6b0aa;
+  --danger-solid: #c0392b;                         /* botão de ação destrutiva */
+  --danger-solid-hover: #a93226;
+
+  /* Padrão de CRUD (telas versão 4 do CRM): superfícies e estados. As medidas ficam logo abaixo. */
+  --border-input: #aaaaaa;                         /* campo em repouso */
+  --field-border: rgba(111, 119, 109, 0.8);       /* campo do modelo antigo do CRM: borda cinza-oliva */
+  --field-focus: rgba(91, 175, 0, 0.7);           /* foco: verde #5baf00 */
+  --field-text: #555555;
+  --field-label: #6f776d;
+  --field-disabled: #eeeeee;
+  --check-on: #5baf00;                             /* checkbox/radio marcado (iCheck do CRM) */
+  --neutral-solid: rgba(111, 119, 109, 0.7);       /* botão secundário, abas e botão quadrado: cinza do CRM com texto branco */
+  --row-hover: rgba(162, 198, 82, 0.12);
+  --row-selected: rgba(162, 198, 82, 0.3);
+  --disabled-bg: rgb(235, 235, 228);
+  --disabled-text: #999999;
+  --readonly-bg: rgb(235, 235, 228);
+  --icon-muted: #999999;
 
   --header-h: 3.5rem;
   --sidebar-w: 18rem;
   --sidebar-w-collapsed: 4rem;
-  --radius: 0.5rem;
+  --radius: 5px;
 
   /* Medidas do padrão de CRUD */
   --space-xs: 4px;
@@ -58,19 +70,16 @@
   --space-lg: 16px;
   --page-x: 18px;                                  /* margem lateral da tela */
   --page-y: 14px;
-  --control-h: 32px;
+  --control-h: 28px;
   --control-inset: 10px;
-  --button-h: 38px;
+  --button-h: 30px;
   --button-min-w: 120px;
-  --icon-button: 26px;
+  --icon-button: 28px;
   --row-h: 28px;
   --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
+  --radius-md: 5px;
+  --radius-lg: 5px;
 }
-
-:root[data-theme="light"] { color-scheme: light; }
-:root[data-theme="dark"] { color-scheme: dark; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -78,7 +87,7 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.5;
   color: var(--text);
@@ -121,7 +130,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 0.375rem;
-  background: var(--brand);
+  background: var(--brand-bright);
   color: #fff;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -169,8 +178,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   flex-direction: column;
   width: var(--sidebar-w);
   max-width: 86vw;
-  background: var(--chrome);
-  border-right: 1px solid var(--border);
+  background: var(--sidebar);
   transform: translateX(-100%);
   visibility: hidden;
   transition: transform 0.2s ease, visibility 0s linear 0.2s;
@@ -195,8 +203,8 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   justify-content: space-between;
   height: calc(var(--header-h) + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) 1rem 0;
-  background: var(--chrome);
-  border-bottom: 1px solid var(--border);
+  background: var(--sidebar);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .sidebar-head-actions { display: flex; align-items: center; gap: 0.25rem; }
 .collapse-btn { display: none; }
@@ -212,7 +220,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   line-height: 1rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--label);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .nav-list { display: grid; gap: 0.125rem; margin: 0; padding: 0; list-style: none; }
@@ -223,14 +231,19 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   gap: 0.625rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
-  color: var(--text-nav);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
   line-height: 1.25rem;
   text-decoration: none;
   transition: background-color 0.15s ease;
 }
-.nav-link:hover { background: var(--hover); }
-.nav-link[aria-current="page"] { background: var(--brand); color: #fff; font-weight: 500; }
+.nav-link:hover { background: rgba(255, 255, 255, 0.1); }
+.nav-link[aria-current="page"] { background: var(--brand-bright); color: #fff; font-weight: 700; }
+
+/* Sobre o cinza-oliva da sidebar a marca e os botões de ícone são brancos. */
+.sidebar .brand { color: #fff; }
+.sidebar .icon-btn { color: rgba(255, 255, 255, 0.85); }
+.sidebar .icon-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
 .nav-icon { flex: none; width: 1rem; height: 1rem; }
 .nav-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -245,8 +258,8 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   gap: 0.5rem;
   height: calc(var(--header-h) + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) max(0.75rem, env(safe-area-inset-right)) 0 max(0.75rem, env(safe-area-inset-left));
-  background: var(--chrome);
-  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
 }
 .menu-btn { margin-left: -0.25rem; }
 .header-fill { flex: 1; min-width: 0; }
@@ -322,34 +335,6 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 }
 .dropdown-item:hover { background: var(--hover); }
 
-.theme-picker { padding: 0.25rem 0.75rem 0.5rem; margin-bottom: 0.25rem; border-bottom: 1px solid var(--border); }
-.theme-picker-label { display: block; margin-bottom: 0.375rem; font-size: 0.625rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--label); }
-
-.segmented {
-  display: flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  background: var(--hover);
-}
-
-.segmented button {
-  flex: 1;
-  padding: 0.375rem 0.5rem;
-  border: 0;
-  border-radius: 0.375rem;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.segmented button:hover { color: var(--text-nav); }
-.segmented button[aria-pressed="true"] { background: var(--seg-active); color: var(--accent); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
-
 /* ---------- Conteúdo ---------- */
 
 .app-main {
@@ -392,7 +377,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   .nav-collapsed .nav { padding-left: 0.5rem; padding-right: 0.5rem; }
   .nav-collapsed .nav-label, .nav-collapsed .nav-section-title { display: none; }
   .nav-collapsed .nav-link { justify-content: center; padding-left: 0; padding-right: 0; }
-  .nav-collapsed .nav-section + .nav-section { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+  .nav-collapsed .nav-section + .nav-section { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.2); }
 }
 
 /* ---------- Formulários e botões ---------- */
@@ -501,7 +486,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
     color: #fff;
     background:
       radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.18), transparent 45%),
-      linear-gradient(145deg, #0f766e 0%, #134e4a 100%);
+      linear-gradient(145deg, #5baf00 0%, #4f853d 45%, #2f5126 100%);
   }
   .auth-aside-inner { max-width: 28rem; }
   .brand--on-dark { color: #fff; }
@@ -515,61 +500,98 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 }
 
 /* ==========================================================================
-   Padrão de CRUD — baseado no padrão visual v5 do CRM (Componentes/Base/PadraoVisual + PADROES-VISUAIS.md).
-   Mesmas medidas, hierarquia e componentes: campo 32, botão 38, linha de tabela 28, raios 3/4/6, escala de 4.
+   Padrão de CRUD — baseado nas telas "versão 4" do CRM (PVPedido, FluxoDeAtividades, OrdemDeServico):
+   barra de botões no topo (título à esquerda, botões à direita), widget branco com faixa inferior colorida,
+   abas em barra cheia, títulos de seção com linha embaixo, campos de 28 sem cantos arredondados, botões
+   em CAIXA ALTA de 11px e tabela com cabeçalho → filtros → dados.
    As cores NÃO são as do CRM: usam os tokens deste arquivo (claro/escuro). Cor nova = token em :root.
    Tudo vive dentro de .app-main, então o login (.auth) não é afetado.
    ========================================================================== */
 
+.app-main [hidden] { display: none !important; } /* os componentes abaixo definem display e anulariam o atributo hidden */
+
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
-.alert-success { margin-bottom: var(--space-lg); color: light-dark(#166534, #86efac); background: light-dark(#f0fdf4, #0f2a1a); border: 1px solid light-dark(#bbf7d0, #14532d); }
+.alert-success { margin-bottom: var(--space-lg); color: #1e7e34; background: #eaf6ec; border: 1px solid #b7dfbf; }
 
-/* ---------- Ícones (traçados, pontas arredondadas; ver Pages/Shared/_Icone.cshtml) ---------- */
+/* ---------- Ícones: Font Awesome, como no CRM (ver Views/Shared/_Icone.cshtml). Ícone novo = glyph aqui + case lá. ---------- */
 
-.ico { flex: none; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
-.ico--back { width: 16px; height: 14px; stroke-width: 1.8; }
+.ico { display: inline-block; flex: none; font-family: "Font Awesome 5 Free"; font-size: 12px; font-style: normal; font-weight: 900; line-height: 1; text-rendering: auto; -webkit-font-smoothing: antialiased; }
+.btn .ico { font-size: 14px; }
+.fa-plus::before { content: "\f067"; }
+.fa-edit::before { content: "\f044"; }
+.fa-times::before { content: "\f00d"; }
+.fa-save::before { content: "\f0c7"; }
+.fa-undo::before { content: "\f0e2"; }
+.fa-key::before { content: "\f084"; }
+.fa-search::before { content: "\f002"; }
+.fa-sync::before { content: "\f021"; }
+.fa-equals::before { content: "\f52c"; }
+.fa-bars::before { content: "\f0c9"; }
+.fa-trash::before { content: "\f1f8"; }
+.fa-arrow-right::before { content: "\f061"; }
+.fa-calendar-alt::before { content: "\f073"; }
+.fa-check::before { content: "\f00c"; }
+.fa-chevron-down::before { content: "\f078"; }
 
-/* ---------- Cabeçalho da página: voltar + título à esquerda, ações à direita (fica fixo ao rolar) ---------- */
+/* ---------- Barra de botões (.buttons do CRM): título à esquerda, botões à direita. Não é fixa. ---------- */
 
 .page-head {
-  position: sticky;
-  top: 0;
-  z-index: 5;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  min-height: 56px;
-  margin-bottom: var(--space-lg);
-}
-/* O fundo cobre também a margem do <main>, para o conteúdo não aparecer atrás do cabeçalho fixo. */
-.page-head::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: calc(var(--page-y) * -1) calc(var(--page-x) * -1) -8px;
-  background: var(--bg);
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+  min-height: var(--button-h);
+  margin-bottom: 10px;
 }
 
-.page-back { display: inline-grid; flex: none; place-items: center; width: 32px; height: 32px; margin-right: 6px; border-radius: var(--radius-md); color: var(--text); }
-.page-back:hover { background: var(--hover); }
+.page-title { min-width: 0; margin: 0; overflow: hidden; color: var(--accent); font-family: var(--font-body); font-size: 16px; font-weight: 400; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; }
+.page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-left: auto; }
 
-.page-title { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: 24px; font-weight: 600; line-height: 32px; text-overflow: ellipsis; white-space: nowrap; }
-.page-actions { display: flex; flex: none; align-items: center; gap: 12px; margin-left: auto; }
+/* ---------- Widget: caixa branca com faixa colorida embaixo (.versao4-widget) ---------- */
 
-/* ---------- Seção: título colorido + contêiner cinza (cantos 6, padding 16) ---------- */
+.widget { min-width: 0; padding: 15px; border-bottom: 6px solid var(--brand-soft); border-radius: var(--radius-lg); background: var(--surface); }
+.widget--flush { padding: 0; }
+
+/* ---------- Abas: barra cheia, uma ao lado da outra (.versao4-menustopo-menu / .newtabsactiveV4) ---------- */
+
+.tabs { display: flex; flex-wrap: wrap; margin: -15px -15px 15px; }
+.tab {
+  flex: 1 1 200px;
+  padding: 9px 12px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid #fff;
+  background: var(--neutral-solid);
+  color: #fff;
+  font: inherit;
+  font-family: var(--font-title);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.tab:first-child { border-top-left-radius: var(--radius-lg); }
+.tab:last-child { border-right: 0; border-top-right-radius: var(--radius-lg); }
+.tab:hover { opacity: 0.7; }
+.tab[aria-selected="true"] { background: var(--brand-soft); cursor: default; opacity: 1; }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.tab-panel[hidden] { display: none; }
+
+/* ---------- Seção: título com linha embaixo (.jajm-titulo) ---------- */
 
 .crud-form { display: block; }
 .section { min-width: 0; margin: 0 0 var(--space-lg); padding: 0; border: 0; }
+.section:last-child { margin-bottom: 0; }
 
-.section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: var(--space-lg) 0 var(--space-sm); }
-.section > .section-head:first-of-type { margin-top: 0; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 var(--space-sm); border-bottom: 1px solid var(--border); }
+.section-title { margin: 0; color: var(--accent); font-family: var(--font-title); font-size: 14px; font-weight: 400; line-height: 24px; }
+.section-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
 
-.section-title { margin: 0; color: var(--accent); font-size: 14px; font-weight: 600; line-height: 20px; }
-.section-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 26px; }
-
-.section-body { display: grid; gap: var(--space-lg); min-width: 0; padding: var(--space-lg); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--section); }
-.section-body--flush { padding: 0; border: 0; background: transparent; }
+.section-body { display: grid; gap: var(--space-lg); min-width: 0; }
 
 .section-text { margin: 0; font-size: 13px; line-height: 18px; }
 .section-text--muted { color: var(--muted); }
@@ -577,9 +599,9 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 
 .note { margin: 0; color: var(--muted); font-size: 12px; font-style: italic; line-height: 16px; }
 
-/* ---------- Grade de campos: 12 colunas, gutter 12, entre linhas 16. Linha curta deixa colunas vazias, sem esticar. ---------- */
+/* ---------- Grade de campos: 12 colunas como o Bootstrap do CRM (15px de cada lado = 30 entre colunas) ---------- */
 
-.field-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-lg) var(--space-md); }
+.field-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0 30px; }
 .field-grid > * { grid-column: 1 / -1; }
 
 @media (min-width: 768px) {
@@ -593,108 +615,157 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   .field-grid > .col-4 { grid-column: span 4; }
 }
 
-/* ---------- Campos ---------- */
+/* ---------- Campos: modelo antigo do CRM (Bootstrap 3 + tema Clover dos formulários/modais): rótulo em negrito #6f776d,
+   campo de 28 sem cantos arredondados, borda cinza-oliva, foco verde. Tipos: texto, senha, textarea, select (nativo ou com busca),
+   data (dd/mm/aaaa com calendário), dinheiro (R$), checkbox e radio quadrados. Marcação de cada tipo: ver CLAUDE.md. ---------- */
 
-.app-main .field { display: grid; align-content: start; gap: var(--space-xs); min-width: 0; }
-.app-main .field label { color: var(--text-nav); font-size: 12px; font-weight: 400; line-height: 16px; }
+.app-main .field { display: grid; align-content: start; min-width: 0; margin-bottom: 15px; }
+.app-main .field > label { margin: 0 0 5px; overflow: hidden; color: var(--field-label); font-size: 12px; font-weight: 700; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
 
-.app-main .field input:not([type="checkbox"]),
-.app-main .field select,
-.app-main .field textarea {
+
+.app-main .field :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]), select, textarea, .select-trigger) {
+  display: block;
   width: 100%;
   height: var(--control-h);
-  padding: 0 var(--control-inset);
-  border: 1px solid var(--border-input);
-  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  border: 1px solid var(--field-border);
+  border-radius: 0;
   background: var(--surface);
-  color: var(--text);
+  color: var(--field-text);
   font: inherit;
   font-size: 13px;
   line-height: 18px;
+  box-shadow: none;
 }
-.app-main .field textarea { height: 60px; padding-top: 8px; padding-bottom: 8px; resize: vertical; }
+.app-main .field textarea { height: auto; min-height: 80px; padding: 6px 10px; resize: none; }
 .app-main .field ::placeholder { color: var(--label); opacity: 1; }
 
-/* Hover e foco mudam só a borda (1px, sem anel: a altura não muda). */
-.app-main .field input:not([type="checkbox"]):hover,
-.app-main .field select:hover,
-.app-main .field textarea:hover { border-color: var(--accent); }
-.app-main .field input:not([type="checkbox"]):focus,
-.app-main .field select:focus,
-.app-main .field textarea:focus { outline: none; border-color: var(--accent); box-shadow: none; }
+/* Foco troca a cor da borda (sem anel). */
+.app-main .field :is(input, select, textarea, .select-trigger):focus,
+.app-main .field .select-box.is-open .select-trigger { outline: none; border-color: var(--field-focus); box-shadow: none; }
 
-.app-main .field input.input-validation-error,
-.app-main .field select.input-validation-error,
-.app-main .field textarea.input-validation-error { border-color: var(--danger); }
+.app-main .field :is(input, select, textarea, .select-trigger).input-validation-error,
+.app-main .field :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--danger); }
 
-.app-main .field input:disabled,
-.app-main .field select:disabled,
-.app-main .field textarea:disabled { border-color: var(--border); background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; }
-.app-main .field input[readonly],
-.app-main .field textarea[readonly] { border-color: var(--border); background: var(--readonly-bg); }
+.app-main .field :is(input, select, textarea, .select-trigger):disabled,
+.app-main .field :is(input, textarea)[readonly] { background: var(--field-disabled); cursor: not-allowed; }
 
-.app-main .field-hint, .app-main .field-error { margin: 0; font-size: 10px; line-height: 14px; }
+.app-main .field-hint, .app-main .field-error { margin: 2px 0 0; font-size: 10px; line-height: 14px; }
 .app-main .field-hint { color: var(--label); }
-.app-main .field-error { min-height: 0; color: var(--danger); }
+.app-main .field-error { font-size: 11px; color: var(--danger); }
 .app-main .field-error:empty { display: none; }
+
+/* Select nativo (sem JS ou sem data-search): mesma altura e uma seta no lugar da do navegador. */
+.app-main .field select {
+  padding-right: 28px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236f776d' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* Campo com ícone à esquerda (.input-type do CRM): calendário na data. O campo ganha 25px de recuo. */
+.input-type { position: relative; display: block; }
+.input-type > .input-type-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(122, 113, 110, 0.7);
+  font-size: 13px;
+  cursor: pointer;
+}
+.input-type > .input-type-btn:hover { color: var(--check-on); }
+.app-main .field .input-type > input:not([type="hidden"]) { padding-left: 25px; }
+/* O <input type="date"> nativo continua no formulário (valor aaaa-mm-dd), mas escondido: quem aparece é o campo com máscara. */
+.app-main .field .input-type > input.date-native { position: absolute; left: 0; bottom: 0; width: 100%; height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+
+/* Select com busca (select2 do CRM, em JS puro): o <select> original fica escondido e segue no formulário. */
+.select-box { position: relative; }
+.app-main .field .select-box > select { position: absolute; left: 0; bottom: 0; width: 100%; height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+.app-main .field .select-box .select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; cursor: pointer; }
+.select-trigger > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select-trigger > span.is-placeholder { color: var(--label); }
+.select-trigger .ico { flex: none; color: var(--field-label); font-size: 10px; }
+
+.select-panel { position: absolute; top: calc(100% - 1px); right: 0; left: 0; z-index: 30; border: 1px solid var(--field-focus); background: var(--surface); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
+.app-main .field .select-panel .select-search { display: block; width: 100%; height: var(--control-h); padding: 4px 10px; border: 0; border-bottom: 1px solid var(--border); background: var(--surface); color: var(--field-text); font: inherit; font-size: 13px; outline: none; }
+.select-options { max-height: 220px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.select-options li { padding: 5px 10px; color: var(--field-text); font-size: 13px; line-height: 18px; cursor: pointer; }
+.select-options li.is-active { background: var(--row-selected); }
+.select-options li[aria-selected="true"] { font-weight: 700; }
+.select-options li.is-empty { color: var(--label); cursor: default; }
 
 /* No toque o 16px evita o zoom automático do iOS ao focar o campo, e o alvo fica maior. */
 @media (pointer: coarse), (max-width: 767.98px) {
-  .app-main .field input:not([type="checkbox"]),
-  .app-main .field select { height: 40px; font-size: 16px; line-height: 24px; }
+  .app-main .field :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]), select, .select-trigger),
+  .app-main .field .select-panel .select-search { height: 40px; font-size: 16px; line-height: 24px; }
   .app-main .field textarea { font-size: 16px; line-height: 24px; }
+  .select-options li { padding: 10px; font-size: 16px; line-height: 24px; }
 }
 
 .app-main .alert { margin-bottom: var(--space-lg); font-size: 13px; line-height: 18px; }
 
-/* ---------- Botões: dois pesos por tela (o primário confirma, o secundário desfaz); o resto é link de texto ou ícone ---------- */
+/* ---------- Botões (.btn-versao4*): CAIXA ALTA, 11px, cantos 5, mínimo 120. Primário = cor da marca; os demais = cinza cheio. ---------- */
 
 .app-main .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   height: var(--button-h);
   min-width: var(--button-min-w);
-  padding: 0 var(--space-lg);
-  border: 1px solid transparent;
+  padding: 0 12px;
+  border: 0;
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
+  background: var(--neutral-solid);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
   text-decoration: none;
+  text-transform: uppercase;
   white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
-.app-main .btn-primary { background: var(--brand); color: #fff; }
-.app-main .btn-primary:hover { background: var(--brand-hover); }
-.app-main .btn-primary:active { background: var(--brand-active); }
+.app-main .btn:hover { opacity: 0.7; color: #fff; }
 
-.app-main .btn-secondary { background: var(--surface); border-color: var(--border-input); color: var(--text); }
-.app-main .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--surface); }
+.app-main .btn-primary { background: var(--brand); font-family: Arial, sans-serif; } /* o botão de destaque do CRM usa Arial */
+.app-main .btn-secondary { background: var(--neutral-solid); }
 
-/* Só para ação destrutiva já confirmada, dentro da própria tela de confirmação. Nunca no cabeçalho. */
-.app-main .btn-danger { background: var(--danger-solid); color: #fff; }
-.app-main .btn-danger:hover { background: var(--danger-solid-hover); }
+/* Só para ação destrutiva já confirmada, dentro da própria tela de confirmação. */
+.app-main .btn-danger { background: var(--danger-solid); }
 
-.app-main .btn:disabled, .app-main .btn[aria-disabled="true"] { border-color: var(--border); background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; }
+.app-main .btn:disabled, .app-main .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+.app-main .btn:disabled:hover, .app-main .btn[aria-disabled="true"]:hover { opacity: 0.55; }
 
-/* Pequeno (26): ação auxiliar dentro de uma seção, nunca no cabeçalho. */
-.app-main .btn-small { height: var(--icon-button); min-width: 0; padding: 0 12px; border-color: var(--accent); background: var(--surface); color: var(--accent); font-size: 12px; line-height: 16px; }
-.app-main .btn-small:hover { background: var(--row-hover); }
+/* Pequeno: ação auxiliar dentro de uma seção. */
+.app-main .btn-small { min-width: 0; padding: 0 10px; font-size: 11px; }
 
-.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.form-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 5px; margin-top: var(--space-sm); }
 
-/* Link de texto: sem caixa, CAIXA ALTA, com ícone. Fica no canto direito do cabeçalho da seção. */
+/* Link de texto: sem caixa, CAIXA ALTA, com ícone. Fica no canto direito do título da seção. */
 .text-action {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 32px;
+  min-height: 24px;
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--accent);
   font: inherit;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 14px;
-  letter-spacing: 0.02em;
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer;
@@ -704,7 +775,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 .text-action--muted { color: var(--muted); }
 .text-action:disabled { color: var(--disabled-text); cursor: not-allowed; text-decoration: none; }
 
-/* Botão de ícone 26×26 (adicionar / editar / excluir ...). O ícone tem 12px, o alvo é a caixa inteira. */
+/* Botão quadrado 28×28 (.jajm-btngrid): ações dentro de uma grade editável. O ícone tem 12px, o alvo é a caixa inteira. */
 .icon-button {
   display: inline-grid;
   flex: none;
@@ -712,25 +783,50 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   width: var(--icon-button);
   height: var(--icon-button);
   padding: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--neutral-button);
-  color: var(--neutral-button-fg);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--neutral-solid);
+  color: #fff;
   text-decoration: none;
   cursor: pointer;
 }
-.icon-button .ico { stroke-width: 1.2; }
-.icon-button:hover { border-color: var(--accent); color: var(--accent); }
-.icon-button--add { border-color: var(--brand); background: var(--brand); color: #fff; }
-.icon-button--add .ico { stroke-width: 1.8; }
-.icon-button--add:hover { border-color: var(--brand-hover); background: var(--brand-hover); color: #fff; }
-.icon-button--edit { color: var(--accent); }
-.icon-button--danger:hover { border-color: var(--danger); color: var(--danger); }
+.icon-button:hover { opacity: 0.7; }
+.icon-button--add, .icon-button--edit { background: var(--brand); }
 
-/* ---------- Chave (switch). O input fica escondido mas continua focável; a trilha reflete o estado via :has(). ---------- */
+/* ---------- Checkbox e radio quadrados (iCheck "square" do CRM): borda cinza-oliva, marcado = verde #5baf00 com ✓ (radio: bolinha). ---------- */
+
+.app-main input[type="checkbox"],
+.app-main input[type="radio"] {
+  display: inline-grid;
+  flex: none;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1px solid var(--field-border);
+  border-radius: 0;
+  background: var(--surface);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+.app-main input[type="radio"] { border-radius: 50%; }
+.app-main input[type="checkbox"]:hover, .app-main input[type="radio"]:hover { border-color: var(--check-on); }
+.app-main input[type="checkbox"]:checked, .app-main input[type="radio"]:checked { border-color: var(--check-on); background: var(--check-on); }
+.app-main input[type="checkbox"]::before { content: "\f00c"; color: #fff; font-family: "Font Awesome 5 Free"; font-size: 11px; font-weight: 900; line-height: 1; transform: scale(0); }
+.app-main input[type="checkbox"]:checked::before { transform: scale(1); }
+.app-main input[type="radio"]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: scale(0); }
+.app-main input[type="radio"]:checked::before { transform: scale(1); }
+.app-main input[type="checkbox"]:focus-visible, .app-main input[type="radio"]:focus-visible { outline: 2px solid var(--field-focus); outline-offset: 2px; }
+.app-main input[type="checkbox"]:disabled, .app-main input[type="radio"]:disabled { background: var(--field-disabled); cursor: not-allowed; }
+.app-main input[type="checkbox"]:disabled:checked, .app-main input[type="radio"]:disabled:checked { border-color: var(--field-border); background: var(--field-border); }
+
+/* ---------- Chave (switch): só no "Administrador" do usuário (decisão do usuário; o CRM não tem). O input fica escondido mas
+   continua focável; a trilha reflete o estado via :has(). ---------- */
 
 .switch { position: relative; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
-.switch input[type="checkbox"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.app-main .switch input[type="checkbox"] { position: absolute; width: 1px; height: 1px; border: 0; opacity: 0; }
+.app-main .switch input[type="checkbox"]::before { content: none; }
 
 .switch-track {
   position: relative;
@@ -739,7 +835,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   height: 20px;
   margin-top: 1px;
   border-radius: 999px;
-  background: var(--switch-off);
+  background: #cccccc;
   transition: background-color 0.15s ease;
 }
 .switch-track::after {
@@ -754,15 +850,15 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   transition: transform 0.15s ease;
 }
-.switch:has(input:checked) .switch-track { background: var(--brand); }
+.switch:has(input:checked) .switch-track { background: var(--check-on); }
 .switch:has(input:checked) .switch-track::after { transform: translateX(14px); }
-.switch:has(input:focus-visible) .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch:has(input:focus-visible) .switch-track { outline: 2px solid var(--field-focus); outline-offset: 2px; }
 
 .switch-text { display: grid; gap: 2px; min-width: 0; }
-.switch-title { color: var(--text); font-size: 13px; font-weight: 600; line-height: 18px; }
+.switch-title { color: var(--field-label); font-size: 12px; font-weight: 700; line-height: 18px; }
 .switch-desc { color: var(--label); font-size: 10px; line-height: 14px; }
 
-/* ---------- Menus de Acesso: cartões por grupo dentro do contêiner da seção ---------- */
+/* ---------- Menus de Acesso: cartões por grupo ---------- */
 
 .menus-block:disabled { opacity: 0.5; }
 
@@ -776,71 +872,82 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 .menus-card .text-action { min-height: 24px; }
 .menus-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
 
-.check-line { display: flex; align-items: center; gap: 8px; min-height: 26px; color: var(--text); font-size: 13px; line-height: 18px; cursor: pointer; }
-.check-line input { flex: none; width: 14px; height: 14px; margin: 0; accent-color: var(--brand); }
+.check-line { display: flex; align-items: center; gap: 8px; min-height: 26px; color: var(--field-label); font-size: 13px; line-height: 18px; cursor: pointer; }
+.check-line--top { align-items: flex-start; }
+.check-line-text { display: grid; gap: 1px; min-width: 0; }
+.check-title { color: var(--field-label); font-size: 12px; font-weight: 700; line-height: 18px; }
+.check-desc { color: var(--label); font-size: 10px; line-height: 14px; }
 
-/* ---------- Tabela (Data Grid): cabeçalho → linha de filtros → linhas de dados, todas com 28 de altura ---------- */
+/* ---------- Tabela (dc-grid): títulos soltos → linha de filtros com campos → linhas de dados de 28 ---------- */
 
 .data-grid-wrap { min-width: 0; }
 .data-grid-scroll { overflow-x: auto; }
 
 .data-grid { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 18px; }
-.data-grid th, .data-grid td {
+
+.data-grid th {
   height: var(--row-h);
-  padding: 0 var(--control-inset);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  padding: 0 10px 0 2px;
+  color: var(--text-nav);
+  font-family: var(--font-title);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
   text-align: left; /* tudo à esquerda, inclusive números e datas */
   white-space: nowrap;
 }
-/* Sem moldura externa: só a grade por dentro. */
-.data-grid tr > :first-child { border-left: 0; }
-.data-grid tr > :last-child { border-right: 0; }
-.data-grid thead tr:first-child > * { border-top: 0; }
 
-.data-grid th { color: var(--text); font-size: 12px; font-weight: 600; line-height: 16px; }
-.data-grid td { color: var(--muted); }
-.data-grid td .cell-strong { color: var(--text); font-weight: 600; }
-.data-grid td .cell-accent { color: var(--accent); font-weight: 600; }
+.data-grid td {
+  height: var(--row-h);
+  padding: 0 10px 0 2px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  text-align: left;
+  white-space: nowrap;
+}
+.data-grid td .cell-strong { font-weight: 600; }
+.data-grid td .cell-accent { color: var(--accent); }
 .data-grid td .cell-aside { margin-left: 6px; color: var(--label); font-size: 11px; font-style: italic; }
 
+.data-grid tbody tr[data-grid-row] { cursor: pointer; }
+.data-grid tbody tr[data-grid-row]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.data-grid .cell-link { color: inherit; text-decoration: none; }
+.data-grid .cell-link:hover { color: var(--accent); text-decoration: underline; }
 .data-grid tbody tr:hover > td { background: var(--row-hover); }
 .data-grid tbody tr[aria-selected="true"] > td { background: var(--row-selected); }
 
-/* Linha de filtros: ícone do tipo de filtro (lupa = texto, "=" = número/data, três traços = lista). Coluna sem filtro fica vazia. */
-.grid-filter td { padding: 0; }
+/* Linha de filtros: campo com o ícone do tipo de filtro (lupa = texto, "=" = número/data, três traços = lista). */
+.grid-filter td { padding: 0 6px 0 0; border-bottom: 0; }
+.grid-filter td:last-child { padding-right: 0; }
 .grid-filter-cell { position: relative; display: block; }
-.grid-filter-cell .ico { position: absolute; top: 50%; left: var(--control-inset); transform: translateY(-50%); color: var(--icon-muted); pointer-events: none; }
+.grid-filter-cell .ico { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); color: var(--icon-muted); font-size: 11px; pointer-events: none; }
 .grid-filter-cell input {
   display: block;
   width: 100%;
   min-width: 7rem;
-  height: calc(var(--row-h) - 1px);
-  padding: 0 var(--control-inset) 0 30px;
-  border: 0;
+  height: var(--control-h);
+  padding: 0 10px 0 25px;
+  border: 0.5px solid var(--border-input);
   border-radius: 0;
-  background: transparent;
-  color: var(--text);
+  background: var(--surface);
+  color: #555555;
   font: inherit;
   font-size: 12px;
 }
-.grid-filter-cell input:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+.grid-filter-cell input:focus { outline: none; border: 1px solid var(--brand-soft); }
 
-.data-grid .col-actions { width: 1%; text-align: left; }
-.data-grid .col-actions .cell-actions { display: inline-flex; gap: 8px; vertical-align: middle; }
-.data-grid td.col-actions { padding-top: 0; padding-bottom: 0; }
+.grid-empty td { color: var(--muted); font-style: italic; }
 
-.grid-empty td { color: var(--muted); font-style: italic; text-align: left; }
+.grid-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px var(--space-lg); padding-top: var(--space-sm); color: var(--muted); font-size: 12px; line-height: 16px; }
 
-.grid-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px var(--space-lg); padding: var(--space-sm) var(--control-inset); color: var(--muted); font-size: 12px; line-height: 16px; }
-
-.pager { display: flex; gap: var(--space-xs); }
+/* Paginação (.dc-botao-paginacao): quadradinhos 28×28 colados, a página atual preenchida. */
+.pager { display: flex; }
 .pager button {
-  min-width: var(--icon-button);
-  height: var(--icon-button);
+  min-width: 28px;
+  height: 28px;
   padding: 0 6px;
-  border: 1px solid var(--border-input);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  border-radius: 0;
   background: var(--surface);
   color: var(--text);
   font: inherit;
@@ -848,18 +955,20 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   line-height: 16px;
   cursor: pointer;
 }
-.pager button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-.pager button[aria-current="page"] { border-color: var(--brand); background: var(--brand); color: #fff; }
-.pager button:disabled { border-color: var(--border); background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; }
+.pager > :not(:first-child) { border-left: 0; }
+.pager button:hover:not(:disabled):not([aria-current="page"]) { color: var(--accent); }
+.pager button[aria-current="page"] { border-color: var(--brand-soft); background: var(--brand-soft); color: #fff; cursor: default; }
+.pager button:disabled { color: var(--disabled-text); cursor: default; }
+.pager span { display: inline-grid; place-items: center; min-width: 28px; border: 1px solid var(--border); border-left: 0; color: var(--muted); }
 
 @media (max-width: 639.98px) {
   .col-hide-sm { display: none; }
 }
 
-/* Mobile: o título ocupa a primeira linha e as ações dividem a segunda (alvo de toque inteiro). */
+/* Mobile: o título ocupa a primeira linha e os botões dividem a segunda. */
 @media (max-width: 767.98px) {
-  .page-head { flex-wrap: wrap; row-gap: 8px; }
-  .page-title { font-size: 20px; line-height: 28px; }
   .page-actions { width: 100%; margin-left: 0; }
-  .app-main .page-actions .btn { flex: 1; min-width: 0; }
+  .app-main .page-actions .btn { flex: 1; min-width: 0; padding: 0 8px; }
+  .widget { padding: 12px; }
+  .tabs { margin: -12px -12px 12px; }
 }

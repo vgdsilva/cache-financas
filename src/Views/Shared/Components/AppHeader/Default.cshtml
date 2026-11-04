@@ -39,14 +39,6 @@
           <span class="user-name">@Model.UserName</span>
           <span class="user-role">@Model.RoleLabel</span>
         </div>
-        <div class="theme-picker">
-          <span class="theme-picker-label" id="theme-label">Tema</span>
-          <div class="segmented" role="group" aria-labelledby="theme-label">
-            <button type="button" data-theme-option="light" aria-pressed="false">Claro</button>
-            <button type="button" data-theme-option="dark" aria-pressed="false">Escuro</button>
-            <button type="button" data-theme-option="system" aria-pressed="true">Sistema</button>
-          </div>
-        </div>
         <form method="post" asp-controller="Conta" asp-action="LogoutPost">
           <button type="submit" class="dropdown-item" role="menuitem">
             @NavIcons.Render("logout")
