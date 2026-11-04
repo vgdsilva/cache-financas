@@ -38,8 +38,8 @@ public static class Menus
 
     public static IReadOnlyList<MenuDefinition> All { get; } =
     [
-        new(Dashboard, "Dashboard", null, "chart", "/dashboard", 10),
-        new(Wallet, "Minha Carteira", null, "wallet", "/minha-carteira", 20),
+        new(Dashboard, "Painel Financeiro", null, "chart", "/dashboard", 10),
+        new(Wallet, "Visão Geral da Carteira", null, "wallet", "/minha-carteira", 20),
         new(Chat, "Cacau IA", null, "chat", "/cacau-ia", 30),
 
         new(Registry, "Cadastros", null, "folder", null, 50),

@@ -2,53 +2,63 @@
 @{
     Layout = "_AuthLayout";
     ViewData["Title"] = "Entrar";
+
+    // Campo com erro de validação: rótulo e borda ficam vermelhos (padrão do login do CRM).
+    string ErrorClass(string key) => ViewData.ModelState[key]?.Errors.Count > 0 ? " has-error" : "";
 }
 
 <div class="auth">
-  <section class="auth-main">
-    <div class="auth-card">
-      <div class="brand brand--lg">
-        <span class="brand-mark" aria-hidden="true">C</span>
-        <span class="brand-name">CacheFinancas</span>
-      </div>
-
-      <h1 class="auth-title">Bem-vindo de volta</h1>
-      <p class="auth-lead">Entre para acompanhar suas finanças.</p>
-
-      <form method="post" class="form" data-login-form>
-        <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
-        <input type="hidden" asp-for="ReturnUrl" />
-
-        <div class="field">
-          <label asp-for="UserName">Usuário</label>
-          <input asp-for="UserName" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus />
-          <span asp-validation-for="UserName" class="field-error"></span>
-        </div>
-
-        <div class="field">
-          <label asp-for="Password">Senha</label>
-          <div class="input-group">
-            <input asp-for="Password" type="password" autocomplete="current-password" />
-            <button type="button" class="input-toggle" data-password-toggle aria-label="Mostrar senha" hidden>Mostrar</button>
-          </div>
-          <span asp-validation-for="Password" class="field-error"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary" data-submit>
-          <span class="btn-label">Entrar</span>
-          <span class="spinner" aria-hidden="true"></span>
-        </button>
-      </form>
+  @* Lado esquerdo: no CRM é o carrossel de imagens; aqui é só a marca. Some abaixo de 1024px. *@
+  <section class="auth-image" aria-hidden="true">
+    <div class="auth-image-inner">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <p class="auth-image-name">CacheFinancas</p>
+      <p class="auth-image-tagline">Controle financeiro pessoal, com um assistente de IA.</p>
     </div>
   </section>
 
-  <aside class="auth-aside" aria-hidden="true">
-    <div class="auth-aside-inner">
-      <div class="brand brand--on-dark">
-        <span class="brand-mark" aria-hidden="true">C</span>
-        <span class="brand-name">CacheFinancas</span>
+  <section class="auth-form">
+    <div class="auth-center">
+      <div class="auth-logo">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">C</span>
+          <span class="brand-name">CacheFinancas</span>
+        </div>
       </div>
-      <p class="auth-tagline">Controle financeiro pessoal, com um assistente de IA.</p>
+
+      <form method="post" class="auth-wrapper" data-login-form>
+        <h1 class="auth-title">Seja bem-vindo(a)</h1>
+
+        <div asp-validation-summary="ModelOnly" class="mensagem-feedback mensagem-feedback-error" role="alert"></div>
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <div class="auth-fields">
+          <div class="auth-field@(ErrorClass("UserName"))">
+            <label asp-for="UserName">Usuário<span>*</span></label>
+            <div class="auth-input">
+              <input asp-for="UserName" placeholder="Informe o usuário" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus />
+            </div>
+            <span asp-validation-for="UserName" class="validation"></span>
+          </div>
+
+          <div class="auth-field@(ErrorClass("Password"))">
+            <label asp-for="Password">Senha<span>*</span></label>
+            <div class="auth-input has-toggle">
+              <input asp-for="Password" type="password" placeholder="Informe sua senha" autocomplete="current-password" />
+              <button type="button" class="reveal-password" data-password-toggle aria-label="Mostrar senha" hidden><i class="ico fa-eye-slash" aria-hidden="true"></i></button>
+            </div>
+            <span asp-validation-for="Password" class="validation"></span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-web" data-submit>Entrar</button>
+      </form>
     </div>
-  </aside>
+
+    <footer class="auth-footer">
+      <div>&copy; @DateTime.Now.Year CacheFinancas</div>
+    </footer>
+  </section>
+
+  <div class="auth-loading" data-loading hidden aria-hidden="true"><i class="ico fa-circle-notch fa-spin" aria-hidden="true"></i></div>
 </div>

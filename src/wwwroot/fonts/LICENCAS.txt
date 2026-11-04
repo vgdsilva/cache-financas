@@ -1,0 +1,7 @@
+Fontes distribuidas com a aplicacao (copiadas do CRM de trabalho, que as usa do mesmo modo):
+
+- OpenSans-Regular-webfont.woff / OpenSans-Bold-webfont.woff: Open Sans, Apache License 2.0.
+- fa-solid-900.woff2: Font Awesome 5 Free (familia solida), fonte sob SIL OFL 1.1.
+- Quicksand-VariableFont_wght.ttf / Nunito-VariableFont_wght.ttf: Quicksand e Nunito (tela de login), SIL OFL 1.1.
+
+Trebuchet MS NAO e distribuida aqui (fonte do sistema); o CSS cai para a Open Sans onde ela nao existir.

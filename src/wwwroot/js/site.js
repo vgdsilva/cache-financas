@@ -292,16 +292,18 @@
     show(tabs.find((tab) => panelOf(tab)?.querySelector(".input-validation-error")) ?? tabs[0]);
   });
 
-  // ---- Login: mostrar/ocultar senha e estado de carregando ----
+  // ---- Login: olho de mostrar/ocultar a senha e tela de carregando ----
   document.querySelectorAll("[data-password-toggle]").forEach((button) => {
-    const input = button.closest(".input-group")?.querySelector("input");
+    const input = button.closest(".auth-input")?.querySelector("input");
+    const icon = button.querySelector(".ico");
     if (!input) return;
 
     button.hidden = false; // sem JS o botão fica oculto e a senha segue mascarada
     button.addEventListener("click", () => {
       const show = input.type === "password";
       input.type = show ? "text" : "password";
-      button.textContent = show ? "Ocultar" : "Mostrar";
+      icon?.classList.toggle("fa-eye", show);
+      icon?.classList.toggle("fa-eye-slash", !show);
       button.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
     });
   });
@@ -309,22 +311,14 @@
   const loginForm = document.querySelector("[data-login-form]");
 
   if (loginForm) {
-    const submit = loginForm.querySelector("[data-submit]");
+    const loading = document.querySelector("[data-loading]");
 
-    loginForm.addEventListener("submit", () => {
-      submit?.classList.add("is-loading");
-      submit?.setAttribute("aria-busy", "true");
-      // Desabilita depois do envio iniciar, para não cancelar o submit.
-      setTimeout(() => { if (submit) submit.disabled = true; }, 0);
-    });
+    // A tela de carregando cobre a página inteira, então também impede um segundo envio.
+    loginForm.addEventListener("submit", () => { if (loading) loading.hidden = false; });
 
-    // Voltar pelo histórico (bfcache) não deve manter o botão travado.
+    // Voltar pelo histórico (bfcache) não deve manter a tela de carregando.
     window.addEventListener("pageshow", (event) => {
-      if (event.persisted && submit) {
-        submit.disabled = false;
-        submit.classList.remove("is-loading");
-        submit.removeAttribute("aria-busy");
-      }
+      if (event.persisted && loading) loading.hidden = true;
     });
   }
 })();

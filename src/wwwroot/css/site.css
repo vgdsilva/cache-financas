@@ -10,6 +10,8 @@
    Trebuchet MS não é distribuída aqui: usa a do sistema e cai para a Open Sans onde não existir. */
 @font-face { font-family: "Open Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/OpenSans-Regular-webfont.woff") format("woff"); }
 @font-face { font-family: "Open Sans"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/OpenSans-Bold-webfont.woff") format("woff"); }
+@font-face { font-family: "Quicksand"; font-weight: 300 700; font-style: normal; font-display: swap; src: url("../fonts/Quicksand-VariableFont_wght.ttf") format("truetype"); }
+@font-face { font-family: "Nunito"; font-weight: 200 1000; font-style: normal; font-display: swap; src: url("../fonts/Nunito-VariableFont_wght.ttf") format("truetype"); }
 @font-face { font-family: "Font Awesome 5 Free"; font-weight: 900; font-style: normal; font-display: block; src: url("../fonts/fa-solid-900.woff2") format("woff2"); }
 
 /* Paleta do CRM (theme_clover.css e coreversao4.css). Cada cor existe uma vez só; cor nova = token aqui. */
@@ -20,7 +22,11 @@
   --font-title: "Trebuchet MS", "Open Sans", Tahoma, sans-serif;
 
   --bg: #e9ebe9;                                   /* fundo da página: rgba(111,119,109,.15) sobre branco */
-  --sidebar: #6f776d;                              /* sidebar (cinza-oliva do CRM) */
+  --sidebar: #ffffff;                              /* sidebar (TESTE branca; o CRM usa cinza-oliva #6f776d) */
+  --sidebar-text: #474747;                         /* texto e ícones dos itens */
+  --sidebar-text-muted: #757575;                   /* título de seção */
+  --sidebar-line: #d1d1d1;                         /* divisórias e borda direita */
+  --sidebar-hover: rgba(111, 119, 109, 0.12);      /* hover dos itens e botões */
   --surface: #ffffff;                              /* widget, header, campos, dropdown */
   --border: #d1d1d1;
   --text: #333333;
@@ -51,6 +57,9 @@
   --field-disabled: #eeeeee;
   --check-on: #5baf00;                             /* checkbox/radio marcado (iCheck do CRM) */
   --neutral-solid: rgba(111, 119, 109, 0.7);       /* botão secundário, abas e botão quadrado: cinza do CRM com texto branco */
+  --table-head: #f8f9fa;                           /* thead (table-light do Bootstrap) */
+  --table-line: #dee2e6;                           /* linhas da tabela */
+  --table-hover: rgba(0, 0, 0, 0.075);             /* hover da linha (table-hover) */
   --row-hover: rgba(162, 198, 82, 0.12);
   --row-selected: rgba(162, 198, 82, 0.3);
   --disabled-bg: rgb(235, 235, 228);
@@ -204,7 +213,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   height: calc(var(--header-h) + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) 1rem 0;
   background: var(--sidebar);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid var(--sidebar-line);
 }
 .sidebar-head-actions { display: flex; align-items: center; gap: 0.25rem; }
 .collapse-btn { display: none; }
@@ -220,7 +229,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   line-height: 1rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--sidebar-text-muted);
 }
 
 .nav-list { display: grid; gap: 0.125rem; margin: 0; padding: 0; list-style: none; }
@@ -231,19 +240,19 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   gap: 0.625rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--sidebar-text);
   font-size: 0.875rem;
   line-height: 1.25rem;
   text-decoration: none;
   transition: background-color 0.15s ease;
 }
-.nav-link:hover { background: rgba(255, 255, 255, 0.1); }
+.nav-link:hover { background: var(--sidebar-hover); }
 .nav-link[aria-current="page"] { background: var(--brand-bright); color: #fff; font-weight: 700; }
 
-/* Sobre o cinza-oliva da sidebar a marca e os botões de ícone são brancos. */
-.sidebar .brand { color: #fff; }
-.sidebar .icon-btn { color: rgba(255, 255, 255, 0.85); }
-.sidebar .icon-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+/* Marca e botões de ícone seguem a cor do texto da sidebar. */
+.sidebar .brand { color: var(--accent); }
+.sidebar .icon-btn { color: var(--sidebar-text); }
+.sidebar .icon-btn:hover { background: var(--sidebar-hover); color: var(--sidebar-text); }
 
 .nav-icon { flex: none; width: 1rem; height: 1rem; }
 .nav-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -364,6 +373,7 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
     transform: none;
     visibility: visible;
     transition: width 0.2s ease;
+    border-right: 1px solid var(--sidebar-line);
   }
 
   .nav-backdrop, .menu-btn, .close-btn, .header-brand { display: none; }
@@ -377,126 +387,183 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
   .nav-collapsed .nav { padding-left: 0.5rem; padding-right: 0.5rem; }
   .nav-collapsed .nav-label, .nav-collapsed .nav-section-title { display: none; }
   .nav-collapsed .nav-link { justify-content: center; padding-left: 0; padding-right: 0; }
-  .nav-collapsed .nav-section + .nav-section { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+  .nav-collapsed .nav-section + .nav-section { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--sidebar-line); }
 }
 
-/* ---------- Formulários e botões ---------- */
-
-.form { display: grid; gap: 1.125rem; }
-.field { display: grid; gap: 0.375rem; }
-.field label { font-size: 0.8125rem; font-weight: 500; }
-
-.field input:not([type="checkbox"]) {
-  width: 100%;
-  height: 2.75rem;
-  padding: 0 0.875rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 1rem; /* 16px: evita o zoom automático do iOS */
-}
-.field input:not([type="checkbox"]):focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--ring); }
-.field input.input-validation-error { border-color: var(--danger); }
-
-.field-error { min-height: 0; color: var(--danger); font-size: 0.8125rem; }
-.field-error:empty { display: none; }
-
-.input-group { position: relative; }
-.input-group input { padding-right: 4.5rem; }
-
-.input-toggle {
-  position: absolute;
-  top: 50%;
-  right: 0.5rem;
-  transform: translateY(-50%);
-  padding: 0.375rem 0.5rem;
-  border: 0;
-  border-radius: 0.375rem;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.8125rem;
-  cursor: pointer;
-}
-.input-toggle:hover { color: var(--text); background: var(--hover); }
-.input-toggle[hidden] { display: none; }
+/* ---------- Mensagens e botão base (o padrão de CRUD refina o .btn dentro de .app-main) ---------- */
 
 .alert { padding: 0.625rem 0.875rem; border-radius: var(--radius); font-size: 0.875rem; }
 .alert ul { margin: 0; padding: 0; list-style: none; }
 .alert-error { color: var(--danger); background: var(--danger-bg); border: 1px solid var(--danger-border); }
 .validation-summary-valid { display: none; }
 
-.btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 2.75rem;
-  padding: 0 1.25rem;
-  border: 0;
-  border-radius: var(--radius);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
+.btn { position: relative; border: 0; font: inherit; cursor: pointer; }
+
+/* ---------- Login: padrão do login do CRM (Clover 6) ----------
+   Marca/imagem à esquerda, formulário à direita (centro de 22,5vw), fontes Quicksand e Nunito, botão verde #5baf00 e rodapé
+   fixo de 50vw com cantos de cima arredondados. Abaixo de 1024px a metade da esquerda some, como no CRM. As cores abaixo são
+   as do :root do login.css do CRM e só valem dentro de .auth. ---------- */
+
+.auth-body { margin: 0; background: #ffffff; }
+
+.auth {
+  --lg-primary-50: #f0f4ea;
+  --lg-primary-300: #98de00;
+  --lg-primary-500: #5baf00;
+  --lg-primary-600: #498b00;
+  --lg-gray-100: #f3f4f6;
+  --lg-gray-200: #e5e7eb;
+  --lg-gray-400: #9ca3af;
+  --lg-gray-500: #6b7280;
+  --lg-gray-800: #1f2937;
+  --lg-red-50: #fef2f2;
+  --lg-red-500: #ef4444;
+
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: "Quicksand", sans-serif;
+  color: #000000;
 }
-.btn-primary { background: var(--brand); color: #fff; }
-.btn-primary:hover { background: var(--brand-hover); }
-.btn:disabled { opacity: 0.8; cursor: progress; }
 
-.spinner {
-  display: none;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+.auth-image { display: none; flex: 1 1 0; place-items: center; padding: 3rem; background: var(--lg-primary-50); }
+.auth-image-inner { display: grid; justify-items: center; gap: 1.5rem; text-align: center; }
+.auth-image .brand-mark { width: 5rem; height: 5rem; border-radius: 1.25rem; background: var(--lg-primary-500); font-size: 2.5rem; }
+.auth-image-name { margin: 0; color: #212121; font: 700 32px/normal "Nunito", sans-serif; }
+.auth-image-tagline { margin: 0; color: var(--lg-gray-500); font: 500 18px/28px "Quicksand", sans-serif; }
+
+.auth-form { position: relative; display: flex; flex: 1 1 0; flex-direction: column; min-width: 0; }
+.auth-center { width: 22.5vw; min-width: 20rem; margin: auto; padding: 2rem 0 6rem; }
+
+.auth-logo { display: flex; justify-content: center; margin-bottom: 2rem; }
+.auth-logo .brand { color: #212121; }
+.auth-logo .brand-mark { width: 3rem; height: 3rem; border-radius: 0.75rem; background: var(--lg-primary-500); font-size: 1.5rem; }
+.auth-logo .brand-name { font: 700 22px/1 "Nunito", sans-serif; }
+
+.auth-wrapper { display: flex; flex-direction: column; align-items: center; gap: 32px; width: 100%; margin: 0; }
+.auth-title { margin: 0; color: #212121; font: 700 24px/normal "Nunito", sans-serif; text-align: center; }
+
+.auth-fields { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; width: 100%; }
+.auth-field { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.auth-field label { margin: 0; color: #000000; font: 500 14px/20px "Quicksand", sans-serif; }
+.auth-field label span { margin-left: 2px; color: var(--lg-red-500); }
+.auth-input { position: relative; }
+
+.auth-field input {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--lg-gray-500);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #000000;
+  font: 600 14px/16px "Quicksand", sans-serif;
+  box-shadow: none;
+  outline: none;
 }
-.is-loading .spinner { display: inline-block; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.auth-field input::placeholder { color: var(--lg-gray-400); font: 500 14px/24px "Quicksand", sans-serif; opacity: 1; }
+.auth-field input:focus { border-color: var(--lg-primary-500); box-shadow: none; }
+.auth-field input[type="password"], .auth-field .auth-input.has-toggle input { padding-right: 38px; }
 
-/* ---------- Login (modelo SaaS: formulário + painel de marca) ---------- */
-
-.auth-body { background: var(--surface); }
-
-.auth { display: grid; min-height: 100vh; min-height: 100dvh; }
-
-.auth-main {
+/* Olho de mostrar/ocultar a senha (.reveal-password): fica escondido sem JS e a senha segue mascarada. */
+.reveal-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  z-index: 10;
   display: grid;
   place-items: center;
-  padding: max(1.5rem, env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lg-primary-500);
+  font-size: 14px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.reveal-password[hidden] { display: none; }
+.reveal-password .ico { font-size: 14px; }
+
+/* Validação: rótulo e borda vermelhos e a mensagem com ícone embaixo do campo. */
+.auth-field.has-error label { color: var(--lg-red-500); font-weight: 600; }
+.auth-field.has-error input { border-color: var(--lg-red-500); }
+.auth-field .validation { margin: 0; color: var(--lg-red-500); font: 500 12px/16px "Quicksand", sans-serif; }
+.auth-field .validation:empty { display: none; }
+.auth-field .validation::before { content: "\f06a"; margin-right: 4px; font-family: "Font Awesome 5 Free"; font-weight: 900; }
+
+/* Mensagem de feedback (.mensagem-feedback): erro geral do formulário, p. ex. usuário ou senha inválidos. */
+.mensagem-feedback { display: flex; align-items: flex-start; gap: 12px; width: 100%; margin: 0; padding: 12px; border-radius: 6px; font: 500 12px/20px "Quicksand", sans-serif; }
+.mensagem-feedback::before { content: "\f057"; flex: none; width: 24px; font-family: "Font Awesome 5 Free"; font-size: 24px; font-weight: 900; line-height: 24px; text-align: center; }
+.mensagem-feedback ul { flex: 1; margin: 0; padding: 0; list-style: none; }
+.mensagem-feedback-error { background: var(--lg-red-50); color: var(--lg-red-500); }
+
+.btn-web {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 4px;
+  background-color: var(--lg-primary-500);
+  color: #ffffff;
+  font: 600 16px/24px "Quicksand", sans-serif;
+  text-align: center;
+  cursor: pointer;
+}
+.btn-web:hover { background-color: var(--lg-primary-300); }
+.btn-web:focus { background-color: var(--lg-primary-600); outline: none; }
+.btn-web:focus-visible { outline: 2px solid var(--lg-primary-600); outline-offset: 2px; }
+
+.auth-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100vw;
+  padding: 16px;
+  border-radius: 16px 16px 0 0;
+  background-color: var(--lg-gray-100);
+  color: var(--lg-gray-800);
+  font: 500 12px/18px "Quicksand", sans-serif;
+  text-align: center;
 }
 
-.auth-card { width: 100%; max-width: 24rem; }
-.auth-title { margin: 2rem 0 0.25rem; font-size: 1.5rem; }
-.auth-lead { margin: 0 0 1.75rem; color: var(--muted); }
+/* Tela de carregando (#loading-outer): cobre a página enquanto o login é enviado. */
+.auth-loading { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgba(0, 0, 0, 0.33); }
+.auth-loading[hidden] { display: none; }
+.auth-loading .ico { color: var(--lg-primary-500); font-size: 3em; }
 
-.auth-aside { display: none; }
+@media (min-width: 1025px) {
+  .auth-image { display: grid; }
+  .auth-footer { width: 50vw; }
+}
 
-@media (min-width: 900px) {
-  .auth { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 1024px) {
+  .auth-center { width: 45vw; }
+}
 
-  .auth-aside {
-    display: grid;
-    align-items: end;
-    padding: 3rem;
-    color: #fff;
-    background:
-      radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.18), transparent 45%),
-      linear-gradient(145deg, #5baf00 0%, #4f853d 45%, #2f5126 100%);
-  }
-  .auth-aside-inner { max-width: 28rem; }
-  .brand--on-dark { color: #fff; }
-  .brand--on-dark .brand-mark { background: rgba(255, 255, 255, 0.18); }
-  .auth-tagline { margin: 1.5rem 0 0; font-size: 1.75rem; font-weight: 600; line-height: 1.25; }
+/* Celular: 45vw ficaria estreito demais; usa a largura da tela menos a margem. */
+@media (max-width: 640px) {
+  .auth-center { width: calc(100% - 2.5rem); min-width: 0; }
+}
+
+@media (max-height: 600px) {
+  .auth-wrapper { gap: 16px; }
+  .auth-fields { gap: 12px; }
+  .auth-field { gap: 4px; }
+  .auth-field label { font: 500 12px/16px "Quicksand", sans-serif; }
+  .auth-footer { padding: 11px; font: 500 10px/14px "Quicksand", sans-serif; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .nav-backdrop, .user-chevron { transition: none; }
-  .spinner { animation-duration: 1.5s; }
+  .fa-spin { animation-duration: 1.5s; }
 }
 
 /* ==========================================================================
@@ -533,6 +600,13 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 .fa-calendar-alt::before { content: "\f073"; }
 .fa-check::before { content: "\f00c"; }
 .fa-chevron-down::before { content: "\f078"; }
+.fa-eye::before { content: "\f06e"; }
+.fa-eye-slash::before { content: "\f070"; }
+.fa-circle-notch::before { content: "\f1ce"; }
+.fa-exclamation-circle::before { content: "\f06a"; }
+.fa-times-circle::before { content: "\f057"; }
+.fa-spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---------- Barra de botões (.buttons do CRM): título à esquerda, botões à direita. Não é fixa. ---------- */
 
@@ -548,6 +622,9 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 
 .page-title { min-width: 0; margin: 0; overflow: hidden; color: var(--accent); font-family: var(--font-body); font-size: 16px; font-weight: 400; line-height: 24px; text-overflow: ellipsis; white-space: nowrap; }
 .page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-left: auto; }
+
+/* Ações do formulário (Cancelar / Salvar): no fim da tela, à direita. */
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; }
 
 /* ---------- Widget: caixa branca com faixa colorida embaixo (.versao4-widget) ---------- */
 
@@ -883,28 +960,22 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 .data-grid-wrap { min-width: 0; }
 .data-grid-scroll { overflow-x: auto; }
 
-.data-grid { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 18px; }
+/* Estilo do `table table-hover align-middle` + `thead.table-light` do Bootstrap 5 (sem a biblioteca). */
+.data-grid { width: 100%; border-collapse: collapse; color: var(--text); font-size: 14px; line-height: 21px; vertical-align: middle; }
 
+.data-grid th,
+.data-grid td { padding: 8px; vertical-align: middle; text-align: left; white-space: nowrap; }
+
+.data-grid thead { background: var(--table-head); }
 .data-grid th {
-  height: var(--row-h);
-  padding: 0 10px 0 2px;
-  color: var(--text-nav);
-  font-family: var(--font-title);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left; /* tudo à esquerda, inclusive números e datas */
-  white-space: nowrap;
+  border-bottom: 1px solid var(--table-line);
+  color: var(--text);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
 }
 
-.data-grid td {
-  height: var(--row-h);
-  padding: 0 10px 0 2px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-  text-align: left;
-  white-space: nowrap;
-}
+.data-grid td { border-bottom: 1px solid var(--table-line); color: var(--text); }
 .data-grid td .cell-strong { font-weight: 600; }
 .data-grid td .cell-accent { color: var(--accent); }
 .data-grid td .cell-aside { margin-left: 6px; color: var(--label); font-size: 11px; font-style: italic; }
@@ -913,12 +984,11 @@ h1 { font-size: 1.125rem; font-weight: 700; line-height: 1.5; margin: 0; }
 .data-grid tbody tr[data-grid-row]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .data-grid .cell-link { color: inherit; text-decoration: none; }
 .data-grid .cell-link:hover { color: var(--accent); text-decoration: underline; }
-.data-grid tbody tr:hover > td { background: var(--row-hover); }
+.data-grid tbody tr:hover > td { background: var(--table-hover); }
 .data-grid tbody tr[aria-selected="true"] > td { background: var(--row-selected); }
 
 /* Linha de filtros: campo com o ícone do tipo de filtro (lupa = texto, "=" = número/data, três traços = lista). */
-.grid-filter td { padding: 0 6px 0 0; border-bottom: 0; }
-.grid-filter td:last-child { padding-right: 0; }
+.grid-filter td { padding: 0 8px 8px; border-bottom: 1px solid var(--table-line); }
 .grid-filter-cell { position: relative; display: block; }
 .grid-filter-cell .ico { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); color: var(--icon-muted); font-size: 11px; pointer-events: none; }
 .grid-filter-cell input {
